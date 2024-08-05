@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::hash_table::HashTable;
 use crate::node::Node;
 use crate::priority_queue::PriorityQueue;
@@ -50,32 +51,25 @@ impl AStar {
             + (y as isize - end_node.get_y() as isize).abs() as usize
     }
 
-    fn find_g_cost(&self, current_node: &Node) -> usize {
-        let mut g_cost = 0;
-        let mut node = current_node;
-        while let Some(parent) = node.get_parent() {
-            g_cost += self.get_hv_cost();
-            node = parent;
-        }
-        g_cost
-    }
-
     fn find_neighbours(&self, x: usize, y: usize) -> Vec<Node> {
         let mut neighbours = Vec::new();
         let allowed_directions = self.get_matrix()[y][x].get_allowed_directions();
         for (dx, dy) in allowed_directions {
-            let new_x = x as isize + dx;
-            let new_y = y as isize + dy;
-            if new_x >= 0
-                && new_y >= 0
-                && new_x < self.get_matrix()[0].len() as isize
-                && new_y < self.get_matrix().len() as isize
+            let new_x = (x as isize + dx) as usize;
+            let new_y = (y as isize + dy) as usize;
+
+            if new_x < self.get_matrix()[0].len()
+                && new_y < self.get_matrix().len()
+                && self.get_matrix()[new_y][new_x].get_block() != 1
             {
-                let new_x = new_x as usize;
-                let new_y = new_y as usize;
-                if self.get_matrix()[new_y][new_x].get_block() != 1 {
-                    neighbours.push(Node::new(new_x, new_y));
-                }
+                println!("Found neighbour at ({}, {})", new_x, new_y);
+                neighbours.push(Node::new(
+                    new_x,
+                    new_y,
+                    Some(0),
+                    None,
+                    Some(self.get_matrix()[new_y][new_x].clone()),
+                ));
             }
         }
         neighbours
@@ -85,9 +79,19 @@ impl AStar {
         let mut path = Vec::new();
         let mut current_node = end_node;
         while let Some(parent) = current_node.get_parent() {
+            println!(
+                "Adding to path: ({}, {})",
+                current_node.get_x(),
+                current_node.get_y()
+            );
             path.push((current_node.get_x(), current_node.get_y()));
             current_node = parent;
         }
+        println!(
+            "Adding start node to path: ({}, {})",
+            current_node.get_x(),
+            current_node.get_y()
+        );
         path.push((current_node.get_x(), current_node.get_y()));
         path.reverse();
         path
@@ -99,6 +103,25 @@ impl AStar {
         } else {
             false
         }
+    }
+
+    fn distance(&self, node1: &Node, node2: &Node) -> usize {
+        (node1.get_x() as isize - node2.get_x() as isize).abs() as usize
+            + (node1.get_y() as isize - node2.get_y() as isize).abs() as usize
+    }
+
+    fn find_g_cost(&self, current_node: &Node) -> usize {
+        let mut g_cost = 0;
+        let mut node = current_node;
+        while let Some(parent) = node.get_parent() {
+            g_cost += if self.distance(node, parent) == 1 {
+                self.get_hv_cost()
+            } else {
+                self.get_diagonal_cost()
+            };
+            node = parent;
+        }
+        g_cost
     }
 
     fn calculate_node_data(
@@ -116,6 +139,16 @@ impl AStar {
         neighbour.set_g(new_g);
         neighbour.set_f(new_f);
 
+        println!(
+            "Neighbour ({}, {}): g={}, h={}, f={}, previous_f={}",
+            neighbour.get_x(),
+            neighbour.get_y(),
+            new_g,
+            new_h,
+            new_f,
+            previous_f_cost
+        );
+
         if previous_f_cost <= new_f {
             false
         } else {
@@ -124,18 +157,13 @@ impl AStar {
         }
     }
 
-    fn distance(&self, node1: &Node, node2: &Node) -> usize {
-        (node1.get_x() as isize - node2.get_x() as isize).abs() as usize
-            + (node1.get_y() as isize - node2.get_y() as isize).abs() as usize
-    }
-
     pub fn find_shortest_path(
         &mut self,
         point_start: (usize, usize),
         point_end: (usize, usize),
     ) -> Option<Vec<(usize, usize)>> {
-        let start_node = Node::new(point_start.0, point_start.1);
-        let end_node = Node::new(point_end.0, point_end.1);
+        let start_node = Node::new(point_start.0, point_start.1, Some(0), None, None);
+        let end_node = Node::new(point_end.0, point_end.1, Some(0), None, None);
 
         let mut closed_list = HashTable::new();
         let mut open_list = PriorityQueue::new();
@@ -145,27 +173,52 @@ impl AStar {
             let current_node = open_list.poll()?;
 
             if self.equal(&current_node, &end_node) {
+                println!("Path found, setting path...");
                 return Some(self.set_path(&current_node));
             }
 
-            closed_list.insert(current_node.clone(), true);
+            closed_list.insert(current_node.clone());
+            println!(
+                "Current node: ({}, {})",
+                current_node.get_x(),
+                current_node.get_y()
+            );
 
             for mut neighbour in self.find_neighbours(current_node.get_x(), current_node.get_y()) {
-                if closed_list.search(&neighbour) == None {
-                    if neighbour.get_parent().is_none() && !self.equal(&start_node, &neighbour) {
-                        self.calculate_node_data(&mut neighbour, &current_node, &end_node);
-                        neighbour.set_parent(Box::new(current_node.clone()));
-                    } else if current_node.get_f() < neighbour.get_f()
-                        && !self.check_parent_with_start(&start_node, &neighbour)
-                    {
-                        if self.calculate_node_data(&mut neighbour, &current_node, &end_node) {
-                            neighbour.set_parent(Box::new(current_node.clone()));
-                        }
-                    }
+                if closed_list.search(&neighbour) {
+                    println!(
+                        "Neighbour ({}, {}) is already in closed list.",
+                        neighbour.get_x(),
+                        neighbour.get_y()
+                    );
+                    continue;
+                }
+
+                let is_new_node = neighbour.get_parent().is_none();
+
+                if is_new_node || self.calculate_node_data(&mut neighbour, &current_node, &end_node)
+                {
+                    println!(
+                        "Updating parent for node: ({}, {})",
+                        neighbour.get_x(),
+                        neighbour.get_y()
+                    );
+                    neighbour.set_parent(Box::new(current_node.clone()));
 
                     if !open_list.contains(&neighbour) {
-                        open_list.add(neighbour);
+                        open_list.add(neighbour.clone()); // Klonlama
+                        println!(
+                            "Added to open list: ({}, {})",
+                            neighbour.get_x(),
+                            neighbour.get_y()
+                        );
                     }
+                } else {
+                    println!(
+                        "Node ({}, {}) not added to open list or updated.",
+                        neighbour.get_x(),
+                        neighbour.get_y()
+                    );
                 }
             }
         }

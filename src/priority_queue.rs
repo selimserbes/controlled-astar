@@ -1,6 +1,6 @@
 use crate::node::Node;
 use std::cmp::Ordering;
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashSet};
 
 #[derive(Clone, Eq, PartialEq)]
 struct PriorityQueueNode {
@@ -10,7 +10,7 @@ struct PriorityQueueNode {
 
 impl Ord for PriorityQueueNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.f.cmp(&self.f)
+        other.f.cmp(&self.f) // Min-heap için ters sıralama
     }
 }
 
@@ -22,34 +22,53 @@ impl PartialOrd for PriorityQueueNode {
 
 pub struct PriorityQueue {
     heap: BinaryHeap<PriorityQueueNode>,
+    set: HashSet<Node>, // Elemanların var olup olmadığını kontrol etmek için HashSet
 }
 
 impl PriorityQueue {
-    pub fn new(start_node: Node) -> Self {
-        let mut heap = BinaryHeap::new();
-        heap.push(PriorityQueueNode {
-            node: start_node.clone(),
-            f: start_node.get_f(),
-        });
-        PriorityQueue { heap }
+    pub fn new() -> Self {
+        PriorityQueue {
+            heap: BinaryHeap::new(),
+            set: HashSet::new(),
+        }
     }
 
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
 
-    pub fn poll(&mut self) -> Node {
-        self.heap.pop().expect("Heap should not be empty").node
+    pub fn poll(&mut self) -> Option<Node> {
+        if let Some(PriorityQueueNode { node, .. }) = self.heap.pop() {
+            self.set.remove(&node);
+            Some(node)
+        } else {
+            None
+        }
     }
 
     pub fn add(&mut self, node: Node) {
-        self.heap.push(PriorityQueueNode {
-            f: node.get_f(),
-            node,
-        });
+        let f = node.get_f();
+        let pq_node = PriorityQueueNode {
+            node: node.clone(),
+            f,
+        };
+        // Önceki f değerini içeren node varsa onu güncelle
+        if self.set.contains(&node) {
+            self.set.remove(&node);
+            self.heap.retain(|n| n.node != node);
+        }
+        self.heap.push(pq_node);
+        self.set.insert(node);
     }
 
-    pub fn get_queue(&self) -> Vec<&Node> {
-        self.heap.iter().map(|pq_node| &pq_node.node).collect()
+    pub fn contains(&self, node: &Node) -> bool {
+        self.set.contains(node)
+    }
+
+    pub fn get_queue(&self) -> Vec<Node> {
+        self.heap
+            .iter()
+            .map(|pq_node| pq_node.node.clone())
+            .collect()
     }
 }
