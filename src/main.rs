@@ -1,62 +1,55 @@
-use controlled_astar::astar::AStar;
-use controlled_astar::node::Node;
+mod astar;
+mod hash_table;
+mod node;
+mod priority_queue;
+
+use astar::AStar;
+use node::Node;
 
 fn main() {
-    // 5x5'lik bir matris oluşturuyoruz
-    let matrix = vec![
+    // Örnek bir grid matrisi oluşturuyoruz. 0 geçilebilir, 1 bloklu (geçilemez) alanları temsil ediyor.
+    let grid = vec![
         vec![
-            Node::new(0, 0, Some(0), None, None),
-            Node::new(1, 0, Some(0), None, None),
-            Node::new(2, 0, Some(0), None, None),
-            Node::new(3, 0, Some(0), None, None),
-            Node::new(4, 0, Some(0), None, None),
+            Node::new(0, 0, 0, None, None),
+            Node::new(1, 0, 0, None, None),
+            Node::new(2, 0, 0, None, None),
+            Node::new(3, 0, 0, None, None),
         ],
         vec![
-            Node::new(0, 1, Some(0), None, None),
-            Node::new(1, 1, Some(0), None, None),
-            Node::new(2, 1, Some(0), None, None),
-            Node::new(3, 1, Some(0), None, None),
-            Node::new(4, 1, Some(0), None, None),
+            Node::new(0, 1, 1, None, None),
+            Node::new(1, 1, 1, None, None),
+            Node::new(2, 1, 1, None, None),
+            Node::new(3, 1, 0, None, None),
         ],
         vec![
-            Node::new(0, 2, Some(0), None, None),
-            Node::new(1, 2, Some(0), None, None),
-            Node::new(2, 2, Some(0), None, None),
-            Node::new(3, 2, Some(0), None, None),
-            Node::new(4, 2, Some(0), None, None),
+            Node::new(0, 2, 1, None, None),
+            Node::new(1, 2, 0, None, None),
+            Node::new(2, 2, 0, None, None),
+            Node::new(3, 2, 0, None, None),
         ],
         vec![
-            Node::new(0, 3, Some(0), None, None),
-            Node::new(1, 3, Some(0), None, None),
-            Node::new(2, 3, Some(0), None, None),
-            Node::new(3, 3, Some(0), None, None),
-            Node::new(4, 3, Some(0), None, None),
-        ],
-        vec![
-            Node::new(0, 4, Some(0), None, None),
-            Node::new(1, 4, Some(0), None, None),
-            Node::new(2, 4, Some(0), None, None),
-            Node::new(3, 4, Some(0), None, None),
-            Node::new(4, 4, Some(0), None, None),
+            Node::new(0, 3, 1, None, None),
+            Node::new(1, 3, 0, None, None),
+            Node::new(2, 3, 0, None, None),
+            Node::new(3, 3, 0, None, None),
         ],
     ];
 
-    let hv_cost = 10;
-    let diagonal_cost = 14;
-    let mut astar = AStar::new(matrix, hv_cost, diagonal_cost);
+    // AStar nesnesini oluşturuyoruz.
+    let mut astar = AStar::new(grid, 10, 14);
 
-    // Başlangıç ve bitiş noktalarını belirliyoruz
-    let point_start = (0, 0);
-    let point_end = (3, 2);
+    // Başlangıç ve bitiş noktalarını belirliyoruz.
+    let start = (0, 0);
+    let end = (1, 2);
 
-    // En kısa yolu bulmaya çalışıyoruz
-    match astar.find_shortest_path(point_start, point_end) {
+    // En kısa yolu bulmaya çalışıyoruz.
+    match astar.find_shortest_path(start, end) {
         Some(path) => {
             println!("En kısa yol bulundu:");
-            for (x, y) in path {
-                println!("({}, {})", x, y);
+            for step in path {
+                println!("({},{})", step[0], step[1]);
             }
         }
-        None => println!("En kısa yol bulunamadı."),
+        None => println!("Yol bulunamadı."),
     }
 }

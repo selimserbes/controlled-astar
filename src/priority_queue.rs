@@ -1,74 +1,74 @@
-use crate::node::Node;
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashSet};
+use std::collections::BinaryHeap;
+use std::collections::HashMap;
+use std::hash::Hash; // Hash trait'ini ekleyin
 
-#[derive(Clone, Eq, PartialEq)]
-struct PriorityQueueNode {
-    node: Node,
-    f: usize,
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PriorityQueueItem<T> {
+    item: T,
+    priority: i32,
 }
 
-impl Ord for PriorityQueueNode {
+impl<T> Ord for PriorityQueueItem<T>
+where
+    T: Eq,
+{
     fn cmp(&self, other: &Self) -> Ordering {
-        other.f.cmp(&self.f) // Min-heap için ters sıralama
+        other.priority.cmp(&self.priority) // Max-heap (en yüksek öncelik en üstte)
     }
 }
 
-impl PartialOrd for PriorityQueueNode {
+impl<T> PartialOrd for PriorityQueueItem<T>
+where
+    T: Eq,
+{
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-pub struct PriorityQueue {
-    heap: BinaryHeap<PriorityQueueNode>,
-    set: HashSet<Node>, // Elemanların var olup olmadığını kontrol etmek için HashSet
+pub struct PriorityQueue<T> {
+    heap: BinaryHeap<PriorityQueueItem<T>>,
+    entry_finder: HashMap<T, i32>, // Store the priority of the items
 }
 
-impl PriorityQueue {
+impl<T> PriorityQueue<T>
+where
+    T: Eq + Hash + Clone, // Hash trait'ini buraya ekleyin
+{
     pub fn new() -> Self {
         PriorityQueue {
             heap: BinaryHeap::new(),
-            set: HashSet::new(),
+            entry_finder: HashMap::new(),
         }
+    }
+
+    pub fn add(&mut self, item: T, priority: i32) {
+        let pq_item = PriorityQueueItem {
+            item: item.clone(),
+            priority,
+        };
+        self.heap.push(pq_item);
+        self.entry_finder.insert(item, priority);
+    }
+
+    pub fn poll(&mut self) -> Option<T> {
+        while let Some(popped_item) = self.heap.pop() {
+            if let Some(&priority) = self.entry_finder.get(&popped_item.item) {
+                if popped_item.priority == priority {
+                    self.entry_finder.remove(&popped_item.item);
+                    return Some(popped_item.item);
+                }
+            }
+        }
+        None
     }
 
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
 
-    pub fn poll(&mut self) -> Option<Node> {
-        if let Some(PriorityQueueNode { node, .. }) = self.heap.pop() {
-            self.set.remove(&node);
-            Some(node)
-        } else {
-            None
-        }
-    }
-
-    pub fn add(&mut self, node: Node) {
-        let f = node.get_f();
-        let pq_node = PriorityQueueNode {
-            node: node.clone(),
-            f,
-        };
-        // Önceki f değerini içeren node varsa onu güncelle
-        if self.set.contains(&node) {
-            self.set.remove(&node);
-            self.heap.retain(|n| n.node != node);
-        }
-        self.heap.push(pq_node);
-        self.set.insert(node);
-    }
-
-    pub fn contains(&self, node: &Node) -> bool {
-        self.set.contains(node)
-    }
-
-    pub fn get_queue(&self) -> Vec<Node> {
-        self.heap
-            .iter()
-            .map(|pq_node| pq_node.node.clone())
-            .collect()
+    pub fn get_queue(&self) -> Vec<T> {
+        self.heap.iter().map(|item| item.item.clone()).collect()
     }
 }
