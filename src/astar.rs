@@ -148,16 +148,10 @@ impl AStar {
         neighbour.set_h(new_h);
         neighbour.set_g(new_g);
         neighbour.set_f(new_f);
-        println!("hello : {:?}", neighbour.parent());
+
+        println!("1. part: {:?}", neighbour.f());
         // If the previous f cost is lower, do not update
-        if previous_f_cost <= new_f {
-            return false;
-        }
-
-        // Make the updates
-        neighbour.set_parent(Some(Box::new(current_node.clone())));
-
-        true
+        previous_f_cost > new_f
     }
 
     // Manhattan distance
@@ -197,7 +191,7 @@ impl AStar {
     ) -> Option<Vec<Vec<i32>>> {
         let start_node = Node::new(point_start.0, point_start.1, 0, None, None);
         let end_node = Node::new(point_end.0, point_end.1, 0, None, None);
-        let mut closed_list = HashTable::new(900000, 0.75);
+        let mut closed_list = HashTable::new(2000, 0.75);
         let mut open_list = PriorityQueue::new();
 
         // Add start node to the open list with its initial f value
@@ -214,19 +208,11 @@ impl AStar {
             }
 
             closed_list.insert(current_node.clone());
-
             for mut neighbour in self.find_neighbours(current_node.x(), current_node.y()) {
                 if !closed_list.contains(&neighbour) {
                     if neighbour.parent().is_none() && !self.equal(&start_node, &neighbour) {
                         self.calculate_node_data(&mut neighbour, &current_node, &end_node);
                         neighbour.set_parent(Some(Box::new(current_node.clone())));
-                    } else if current_node.f() < neighbour.f()
-                        && !self.check_parent_with_start(&start_node, &neighbour)
-                    {
-                        if self.calculate_node_data(&mut neighbour, &current_node, &end_node) {
-                            neighbour.set_parent(Some(Box::new(current_node.clone())));
-                            println!("{:?}", neighbour.parent())
-                        }
                     }
 
                     // Add the neighbour to the open list with its f value
