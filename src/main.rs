@@ -1,41 +1,61 @@
 use controlled_astar::astar::AStar;
 use controlled_astar::node::Node;
+use std::time::{Duration, Instant};
+
 fn main() {
-    // 5x5'lik bir harita oluşturun
-    let mut matrix = Vec::new();
-    for y in 0..5 {
-        let mut row = Vec::new();
-        for x in 0..5 {
-            row.push(Node::new(
-                x, y, 0, // Blok değeri 0 (geçilebilir)
-                None, None,
-            ));
-        }
-        matrix.push(row);
-    }
+    // 4x4 matris harita
+    // 0 -> geçilebilir alan
+    // 1 -> blok (geçilemez alan)
+    //let map = vec![
+    //    vec![0, 0, 0, 0],
+    //    vec![0, 1, 1, 0],
+    //    vec![0, 1, 0, 0],
+    //    vec![0, 0, 0, 0],
+    //];
 
-    // Haritada bazı engeller oluşturun
-    matrix[2][1].set_block(1);
-    matrix[2][2].set_block(1);
-    matrix[2][3].set_block(1);
+    let map = vec![
+        vec![0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        vec![0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+        vec![0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+        vec![0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+        vec![0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0],
+        vec![0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0],
+        vec![0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    ];
 
-    // A* algoritması için bir nesne oluşturun
-    let astar = AStar::new(matrix, 10, 14); // 10 ve 14, yatay-dikey ve çapraz maliyetler
+    // Geçerli yönler (sağ, sol, yukarı, aşağı)
+    let directions = vec![
+        (1, 0),  // sağ
+        (-1, 0), // sol
+        (0, 1),  // aşağı
+        (0, -1), // yukarı
+    ];
 
-    // Başlangıç ve bitiş noktalarını belirleyin
-    let start = (0, 0);
-    let end = (4, 4);
+    // Haritayı Node matrisine dönüştürme
+    let matrix: Vec<Vec<Node>> = map
+        .iter()
+        .enumerate()
+        .map(|(y, row)| {
+            row.iter()
+                .enumerate()
+                .map(|(x, &block)| Node::new(x, y, block, directions.clone()))
+                .collect()
+        })
+        .collect();
 
-    // En kısa yolu bulun
-    match astar.find_shortest_path(start, end) {
-        Some(path) => {
-            println!("En kısa yol bulundu:");
-            for (x, y) in path {
-                println!("({}, {})", x, y);
-            }
-        }
-        None => {
-            println!("Bir yol bulunamadı.");
-        }
-    }
+    // A* algoritması için başlangıç ve hedef noktalarını tanımlama
+    let start = (1, 2); // sol üst köşe
+    let end = (9, 1); // sağ alt köşe
+
+    // A* algoritmasını başlat
+    let mut astar = AStar::new(matrix, 10, 14); // düz yönler için maliyet: 10, çapraz yönler için maliyet: 14
+
+    //let _start = Instant::now();
+    astar.find_shortest_path(start, end);
+    //let _duration = _start.elapsed();
+    //println!("Geçen süre: {:?}", _duration);
 }
