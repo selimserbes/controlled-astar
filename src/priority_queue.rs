@@ -1,74 +1,98 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
-use std::hash::Hash; // Hash trait'ini ekleyin
+use std::sync::atomic::{AtomicUsize, Ordering as AtomicOrdering};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PriorityQueueItem<T> {
-    item: T,
+// `Node` yapısını dışarıdan import ediyoruz
+use crate::node::Node;
+
+#[derive(Debug, Clone)]
+struct PriorityQueueNode {
     priority: i32,
+    node: Node,
 }
 
-impl<T> Ord for PriorityQueueItem<T>
-where
-    T: Eq,
-{
-    fn cmp(&self, other: &Self) -> Ordering {
-        other.priority.cmp(&self.priority) // Max-heap (en yüksek öncelik en üstte)
+impl PartialEq for PriorityQueueNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.priority == other.priority
     }
 }
 
-impl<T> PartialOrd for PriorityQueueItem<T>
-where
-    T: Eq,
-{
+impl Eq for PriorityQueueNode {}
+
+impl PartialOrd for PriorityQueueNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+        Some(other.priority.cmp(&self.priority))
     }
 }
 
-pub struct PriorityQueue<T> {
-    heap: BinaryHeap<PriorityQueueItem<T>>,
-    entry_finder: HashMap<T, i32>, // Store the priority of the items
+impl Ord for PriorityQueueNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.priority.cmp(&self.priority)
+    }
 }
 
-impl<T> PriorityQueue<T>
-where
-    T: Eq + Hash + Clone, // Hash trait'ini buraya ekleyin
-{
-    pub fn new() -> Self {
-        PriorityQueue {
+pub struct PriorityQueue {
+    heap: BinaryHeap<PriorityQueueNode>,
+    entry_finder: HashMap<Node, PriorityQueueNode>,
+    removed: PriorityQueueNode,
+    counter: AtomicUsize,
+}
+
+impl PriorityQueue {
+    pub fn new(first_item: Option<Node>) -> Self {
+        let mut pq = PriorityQueue {
             heap: BinaryHeap::new(),
             entry_finder: HashMap::new(),
+            removed: PriorityQueueNode {
+                priority: i32::MAX,
+                node: Node::default(), // Dummy node, assuming Node implements Default
+            },
+            counter: AtomicUsize::new(0),
+        };
+        if let Some(item) = first_item {
+            pq.add(item);
+        }
+        pq
+    }
+
+    pub fn add(&mut self, item: Node) {
+        if self.entry_finder.contains_key(&item) {
+            self.remove_item(&item);
+        }
+        let count = self.counter.fetch_add(1, AtomicOrdering::SeqCst);
+        let entry = PriorityQueueNode {
+            priority: item.get_f(),
+            node: item,
+        };
+        self.entry_finder.insert(entry.node.clone(), entry.clone());
+        self.heap.push(entry);
+    }
+
+    fn remove_item(&mut self, item: &Node) {
+        if let Some(entry) = self.entry_finder.remove(item) {
+            let mut removed_entry = self.removed.clone();
+            removed_entry.node = entry.node;
+            self.entry_finder
+                .insert(removed_entry.node.clone(), removed_entry);
         }
     }
 
-    pub fn add(&mut self, item: T, priority: i32) {
-        let pq_item = PriorityQueueItem {
-            item: item.clone(),
-            priority,
-        };
-        self.heap.push(pq_item);
-        self.entry_finder.insert(item, priority);
-    }
-
-    pub fn poll(&mut self) -> Option<T> {
-        while let Some(popped_item) = self.heap.pop() {
-            if let Some(&priority) = self.entry_finder.get(&popped_item.item) {
-                if popped_item.priority == priority {
-                    self.entry_finder.remove(&popped_item.item);
-                    return Some(popped_item.item);
-                }
+    pub fn poll(&mut self) -> Option<Node> {
+        while let Some(entry) = self.heap.pop() {
+            if entry.node != self.removed.node {
+                self.entry_finder.remove(&entry.node);
+                return Some(entry.node);
             }
         }
         None
     }
 
     pub fn is_empty(&self) -> bool {
-        self.heap.is_empty()
+        self.entry_finder.is_empty()
     }
 
-    pub fn get_queue(&self) -> Vec<T> {
-        self.heap.iter().map(|item| item.item.clone()).collect()
+    pub fn contains(&self, item: &Node) -> bool {
+        self.entry_finder.contains_key(item)
     }
 }
