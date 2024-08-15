@@ -1,159 +1,81 @@
+// astar.rs
+//
 use crate::hash_table::HashTable;
 use crate::node::Node;
-use crate::priority_queue::PriorityQueue;
+use crate::priority_queue::{PriorityQueue, State};
 
-pub struct AStar {
-    matrix: Vec<Vec<Node>>,
-    hv_cost: usize,
-    diagonal_cost: usize,
+fn manhattan_distance(start: (usize, usize), goal: (usize, usize)) -> usize {
+    let (x1, y1) = start;
+    let (x2, y2) = goal;
+
+    (x1 as isize - x2 as isize).abs() as usize + (y1 as isize - y2 as isize).abs() as usize
 }
 
-impl AStar {
-    pub fn new(matrix: Vec<Vec<Node>>, hv_cost: usize, diagonal_cost: usize) -> Self {
-        AStar {
-            matrix,
-            hv_cost,
-            diagonal_cost,
-        }
-    }
+pub fn astar_search(
+    start: (usize, usize),
+    goal: (usize, usize),
+    nodes: &HashTable<(usize, usize), Node>,
+) -> Option<Vec<(usize, usize)>> {
+    let mut open_set = PriorityQueue::new();
+    let start_state = State {
+        cost: 0,
+        position: start,
+    };
+    open_set.push(start_state);
 
-    fn get_hv_cost(&self) -> usize {
-        self.hv_cost
-    }
+    let mut came_from = HashTable::new();
+    let mut g_score = HashTable::new();
+    g_score.insert(start, 0);
 
-    fn set_hv_cost(&mut self, hv_cost: usize) {
-        self.hv_cost = hv_cost;
-    }
+    let mut f_score = HashTable::new();
+    f_score.insert(start, manhattan_distance(start, goal));
 
-    fn get_diagonal_cost(&self) -> usize {
-        self.diagonal_cost
-    }
+    while let Some(current_state) = open_set.pop() {
+        let current_position = current_state.position;
 
-    fn set_diagonal_cost(&mut self, diagonal_cost: usize) {
-        self.diagonal_cost = diagonal_cost;
-    }
+        if current_position == goal {
+            let mut path = Vec::new();
+            let mut current = current_position;
 
-    fn equal(&self, current_node: &Node, end_node: &Node) -> bool {
-        current_node.get_x() == end_node.get_x() && current_node.get_y() == end_node.get_y()
-    }
-
-    fn find_heuristic(&self, x: usize, y: usize, end_node: &Node) -> usize {
-        (x as isize - end_node.get_x() as isize).abs() as usize
-            + (y as isize - end_node.get_y() as isize).abs() as usize
-    }
-
-    fn find_g_cost(&self, mut current_node: &Node) -> usize {
-        let mut g_cost = 0;
-
-        while let Some(parent) = current_node.get_parent() {
-            g_cost += self.get_hv_cost();
-            current_node = parent;
-        }
-
-        g_cost
-    }
-
-    fn find_neighbours(&self, x: usize, y: usize) -> Vec<Node> {
-        let mut neighbours_list = Vec::new();
-        let allowed_directions = self.matrix[y][x].get_allowed_directions();
-
-        for &(dx, dy) in allowed_directions {
-            let new_x = (x as isize + dx) as usize;
-            let new_y = (y as isize + dy) as usize;
-            if new_x < self.matrix[0].len()
-                && new_y < self.matrix.len()
-                && self.matrix[new_y][new_x].get_block() != 1
-            {
-                let neighbour_node = Node::new(
-                    new_x,
-                    new_y,
-                    self.matrix[new_y][new_x].get_block(),
-                    self.matrix[new_y][new_x].get_allowed_directions().clone(),
-                );
-                neighbours_list.push(neighbour_node);
-            }
-        }
-
-        neighbours_list
-    }
-
-    fn set_path(&self, end_node: &Node) -> Vec<(usize, usize)> {
-        let mut path = Vec::new();
-        let mut current_node = Some(end_node);
-
-        while let Some(node) = current_node {
-            path.push((node.get_x(), node.get_y()));
-            current_node = node.get_parent().map(|p| &**p);
-        }
-
-        path.reverse();
-        path
-    }
-
-    fn calculate_node_data(&self, neighbour: &mut Node, current_node: &Node, end_node: &Node) {
-        let new_g = self.find_g_cost(current_node) + self.distance(current_node, neighbour);
-        let new_h = self.find_heuristic(neighbour.get_x(), neighbour.get_y(), end_node);
-        let new_f = new_g + new_h;
-
-        neighbour.set_h(new_h);
-        neighbour.set_g(new_g);
-        neighbour.set_f(new_f);
-    }
-
-    fn distance(&self, node1: &Node, node2: &Node) -> usize {
-        (node1.get_x() as isize - node2.get_x() as isize).abs() as usize
-            + (node1.get_y() as isize - node2.get_y() as isize).abs() as usize
-    }
-
-    pub fn find_shortest_path(
-        &mut self,
-        point_start: (usize, usize),
-        point_end: (usize, usize),
-    ) -> Option<Vec<(usize, usize)>> {
-        let start_node = Node::new(
-            point_start.0,
-            point_start.1,
-            self.matrix[point_start.1][point_start.0].get_block(),
-            self.matrix[point_start.1][point_start.0]
-                .get_allowed_directions()
-                .clone(),
-        );
-        let end_node = Node::new(
-            point_end.0,
-            point_end.1,
-            self.matrix[point_end.1][point_end.0].get_block(),
-            self.matrix[point_end.1][point_end.0]
-                .get_allowed_directions()
-                .clone(),
-        );
-
-        let mut closed_list = HashTable::new();
-        let mut open_list = PriorityQueue::new(start_node.clone());
-
-        while !open_list.is_empty() {
-            let current_node = open_list.poll();
-            //println!("x: {}, y: {}", current_node.get_x(), current_node.get_y());
-
-            if self.equal(&current_node, &end_node) {
-                return Some(self.set_path(&current_node));
+            while let Some(prev) = came_from.get(&current) {
+                path.push(current);
+                current = *prev; // Dereference the key here
             }
 
-            closed_list.insert(current_node.clone());
+            path.push(start);
+            path.reverse();
+            return Some(path);
+        }
 
-            for mut neighbour in self.find_neighbours(current_node.get_x(), current_node.get_y()) {
-                if !closed_list.search(&neighbour) {
-                    if neighbour.get_parent().is_none() && !self.equal(&start_node, &neighbour) {
-                        self.calculate_node_data(&mut neighbour, &current_node, &end_node);
-                        neighbour.set_parent(current_node.clone());
-                    }
+        if let Some(current_node) = nodes.get(&current_position) {
+            for &neighbor_position in current_node.neighbors.values() {
+                if let Some(neighbor_pos) = neighbor_position {
+                    if let Some(neighbor_node) = nodes.get(&neighbor_pos) {
+                        if neighbor_node.is_blocked {
+                            continue;
+                        }
 
-                    if !open_list.get_queue().contains(&&neighbour) {
-                        open_list.add(neighbour);
+                        let tentative_g_score =
+                            g_score.get(&current_position).unwrap_or(&usize::MAX) + 1;
+
+                        if tentative_g_score < *g_score.get(&neighbor_pos).unwrap_or(&usize::MAX) {
+                            came_from.insert(neighbor_pos, current_position);
+                            g_score.insert(neighbor_pos, tentative_g_score);
+                            let f_score_value =
+                                tentative_g_score + manhattan_distance(neighbor_pos, goal);
+                            f_score.insert(neighbor_pos, f_score_value);
+
+                            let neighbor_state = State {
+                                cost: f_score_value,
+                                position: neighbor_pos,
+                            };
+                            open_set.push(neighbor_state);
+                        }
                     }
                 }
             }
         }
-
-        None
     }
+
+    None
 }

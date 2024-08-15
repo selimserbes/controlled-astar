@@ -1,56 +1,46 @@
-use crate::node::Node;
+// priority_queue.rs
+
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
-#[derive(Clone, Eq, PartialEq)]
-struct PriorityQueueNode {
-    node: Node,
-    f: usize,
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct State {
+    pub cost: usize,
+    pub position: (usize, usize),
 }
 
-impl Ord for PriorityQueueNode {
+impl Ord for State {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.f.cmp(&self.f)
+        other.cost.cmp(&self.cost)
     }
 }
 
-impl PartialOrd for PriorityQueueNode {
+impl PartialOrd for State {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
 pub struct PriorityQueue {
-    heap: BinaryHeap<PriorityQueueNode>,
+    heap: BinaryHeap<State>,
 }
 
 impl PriorityQueue {
-    pub fn new(start_node: Node) -> Self {
-        let mut heap = BinaryHeap::new();
-        heap.push(PriorityQueueNode {
-            node: start_node.clone(),
-            f: start_node.get_f(),
-        });
-        PriorityQueue { heap }
+    pub fn new() -> Self {
+        PriorityQueue {
+            heap: BinaryHeap::new(),
+        }
+    }
+
+    pub fn push(&mut self, state: State) {
+        self.heap.push(state);
+    }
+
+    pub fn pop(&mut self) -> Option<State> {
+        self.heap.pop()
     }
 
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
-    }
-
-    pub fn poll(&mut self) -> Node {
-        self.heap.pop().expect("Heap should not be empty").node
-    }
-
-    pub fn add(&mut self, node: Node) {
-        self.heap.push(PriorityQueueNode {
-            f: node.get_f(),
-            node,
-        });
-    }
-    pub fn get_queue(&self) -> Vec<&Node> {
-        self.heap
-            .iter()
-            .map(|pq_node| &pq_node.node)
-            .collect::<Vec<&Node>>()
     }
 }

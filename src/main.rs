@@ -1,61 +1,63 @@
-use controlled_astar::astar::AStar;
-use controlled_astar::node::Node;
-use std::time::{Duration, Instant};
+use controlled_astar::astar::astar_search;
+use controlled_astar::hash_table::HashTable;
+use controlled_astar::node::{Direction, Node};
+
+fn matrix_to_nodes(matrix: &[Vec<i32>]) -> HashTable<(usize, usize), Node> {
+    let mut hash_table = HashTable::new();
+    let max_x = matrix.len();
+    let max_y = matrix[0].len();
+
+    for (x, row) in matrix.iter().enumerate() {
+        for (y, &cell) in row.iter().enumerate() {
+            let is_blocked = cell == 1;
+            let node = Node::new(x, y, is_blocked, max_x - 1, max_y - 1);
+            hash_table.insert((x, y), node);
+        }
+    }
+
+    hash_table
+}
 
 fn main() {
-    // 4x4 matris harita
-    // 0 -> geçilebilir alan
-    // 1 -> blok (geçilemez alan)
-    //let map = vec![
-    //    vec![0, 0, 0, 0],
-    //    vec![0, 1, 1, 0],
-    //    vec![0, 1, 0, 0],
-    //    vec![0, 0, 0, 0],
-    //];
-
-    let map = vec![
-        vec![0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        vec![0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
-        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-        vec![0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-        vec![0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-        vec![0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-        vec![0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0],
-        vec![0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0],
-        vec![0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-        vec![0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-        vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    // 10x10'luk bir matris oluşturuyoruz. 0 = yol, 1 = engel.
+    let matrix = vec![
+        vec![0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        vec![0, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        vec![0, 0, 0, 1, 1, 1, 0, 1, 0, 0],
+        vec![1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
+        vec![0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        vec![0, 1, 1, 1, 0, 1, 0, 1, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
 
-    // Geçerli yönler (sağ, sol, yukarı, aşağı)
-    let directions = vec![
-        (1, 0),  // sağ
-        (-1, 0), // sol
-        (0, 1),  // aşağı
-        (0, -1), // yukarı
-    ];
+    // Matrisi Node'lara dönüştürüyoruz
+    let mut nodes = matrix_to_nodes(&matrix);
 
-    // Haritayı Node matrisine dönüştürme
-    let matrix: Vec<Vec<Node>> = map
-        .iter()
-        .enumerate()
-        .map(|(y, row)| {
-            row.iter()
-                .enumerate()
-                .map(|(x, &block)| Node::new(x, y, block, directions.clone()))
-                .collect()
-        })
-        .collect();
+    // Örnek bir konum
+    let position = (0, 0);
 
-    // A* algoritması için başlangıç ve hedef noktalarını tanımlama
-    let start = (1, 2); // sol üst köşe
-    let end = (9, 1); // sağ alt köşe
+    if let Some(node) = nodes.get_mut(&position) {
+        //node.remove_neighbor(Direction::South); // Güney yönünü kaldır
+        node.remove_neighbor(Direction::West); // Batı yönünü kaldır
+        node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
+        // Kuzeydoğu yönü
+    }
 
-    // A* algoritmasını başlat
-    let mut astar = AStar::new(matrix, 10, 14); // düz yönler için maliyet: 10, çapraz yönler için maliyet: 14
+    if let Some(node) = nodes.get_mut(&(0, 0)) {
+        println!("Node ({}, {}): {:?}", 0, 0, node.get_directions());
+    }
 
-    //let _start = Instant::now();
-    astar.find_shortest_path(start, end);
-    //let _duration = _start.elapsed();
-    //println!("Geçen süre: {:?}", _duration);
+    // Başlangıç ve bitiş noktalarını tanımlıyoruz
+    let start = (0, 0);
+    let goal = (9, 9);
+
+    // A* algoritmasını kullanarak yol bulma
+    if let Some(path) = astar_search(start, goal, &nodes) {
+        println!("Yol bulundu: {:?}", path);
+    } else {
+        println!("Yol bulunamadı.");
+    }
 }
