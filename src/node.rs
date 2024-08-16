@@ -1,14 +1,13 @@
-// node.rs
-
-use std::collections::HashMap;
+use std::cmp::{Ord, PartialOrd};
+use std::collections::BTreeMap;
 use std::hash::{Hash, Hasher};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub enum Direction {
     North,
     South,
-    East,
     West,
+    East,
     NorthEast,
     NorthWest,
     SouthEast,
@@ -20,13 +19,14 @@ pub struct Node {
     pub x: usize,
     pub y: usize,
     pub is_blocked: bool,
-    pub neighbors: HashMap<Direction, Option<(usize, usize)>>,
+    pub neighbors: BTreeMap<Direction, Option<(usize, usize)>>,
 }
 
 impl Node {
-    // Node oluşturma sırasında dört yönlü komşuları otomatik atama
+    // Creates a new Node and initializes its neighbors for the four cardinal directions.
+    // The neighbors are assigned based on the node's position and the provided bounds (max_x, max_y).
     pub fn new(x: usize, y: usize, is_blocked: bool, max_x: usize, max_y: usize) -> Self {
-        let mut neighbors = HashMap::new();
+        let mut neighbors = BTreeMap::new();
 
         if y > 0 {
             neighbors.insert(Direction::North, Some((x, y - 1)));
@@ -49,27 +49,30 @@ impl Node {
         }
     }
 
-    // Belirli bir yönü ayarlamak için (manuel değişiklik)
+    // Sets a specific neighbor direction to the provided position.
+    // Allows manual adjustments to the neighbors.
     pub fn set_neighbor(&mut self, direction: Direction, neighbor_pos: Option<(usize, usize)>) {
         self.neighbors.insert(direction, neighbor_pos);
     }
 
-    // Belirli bir yönü kaldırmak için
+    // Removes the neighbor in the specified direction.
     pub fn remove_neighbor(&mut self, direction: Direction) {
         self.neighbors.remove(&direction);
     }
 
-    // Block (engel) durumunu değiştirme
+    // Sets the blocked status of the node.
     pub fn set_blocked(&mut self, blocked: bool) {
         self.is_blocked = blocked;
     }
 
-    // Node'un yönlerini almak için
+    // Returns a vector of all directions that have neighbors.
     pub fn get_directions(&self) -> Vec<Direction> {
         self.neighbors.keys().cloned().collect()
     }
 }
-// Hash trait'ini elle implement ediyoruz, sadece x, y ve is_blocked alanları hash'leniyor.
+
+// Implements the Hash trait for Node.
+// Only x, y, and is_blocked fields are used to generate the hash value.
 impl Hash for Node {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.x.hash(state);
