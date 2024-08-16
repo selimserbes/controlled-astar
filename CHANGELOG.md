@@ -11,3 +11,7 @@
 - Accelerated execution and removed redundant components.
 
 ## [0.1.2] - 2024-08-16
+
+- Replaced HashTable with HashMap to improve performance and better align with Rust's standard library.
+- Refactored code structure to enhance readability and maintainability.
+- Streamlined functions and reduced redundancy for improved performance.
