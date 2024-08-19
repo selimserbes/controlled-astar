@@ -17,17 +17,25 @@ fn main() {
     ];
 
     // Convert the matrix to a HashMap of Node objects.
-    let nodes = Node::matrix_to_nodes(&matrix);
+    let mut nodes = Node::matrix_to_nodes(&matrix);
 
     // Uncomment this block if you want to manually modify specific nodes.
-    /*
+
     let position = (0, 0);
 
     if let Some(node) = nodes.get_mut(&position) {
+        node.remove_neighbor(Direction::South);
+        node.remove_neighbor(Direction::East);
+        node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
+    }
+
+    if let Some(node) = nodes.get_mut(&(1, 1)) {
+        node.remove_neighbor(Direction::North);
+        node.remove_neighbor(Direction::South);
+        node.remove_neighbor(Direction::East);
         node.remove_neighbor(Direction::West);
         node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
     }
-    */
 
     // Print the directions of all nodes.
     for ((x, y), node) in nodes.iter() {
@@ -35,8 +43,8 @@ fn main() {
     }
 
     // Print the directions of the specific node at position (0, 0).
-    if let Some(node) = nodes.get(&(0, 0)) {
-        println!("Node ({}, {}): {:?}", 0, 0, node.get_directions());
+    if let Some(node) = nodes.get(&(1, 1)) {
+        println!("Node ({}, {}): {:?}", 1, 1, node.get_directions());
     }
 
     // Initialize AStar with the nodes map.
