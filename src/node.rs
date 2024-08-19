@@ -1,5 +1,5 @@
 use std::cmp::{Ord, PartialOrd};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
@@ -68,6 +68,23 @@ impl Node {
     // Returns a vector of all directions that have neighbors.
     pub fn get_directions(&self) -> Vec<Direction> {
         self.neighbors.keys().cloned().collect()
+    }
+    // Converts a 2D matrix into a HashMap of Node objects.
+    // 1 represents a blocked cell, 0 represents an open cell.
+    pub fn matrix_to_nodes(matrix: &[Vec<i32>]) -> HashMap<(usize, usize), Node> {
+        let mut hash_map = HashMap::new();
+        let max_x = matrix.len() - 1;
+        let max_y = matrix[0].len() - 1;
+
+        for (x, row) in matrix.iter().enumerate() {
+            for (y, &cell) in row.iter().enumerate() {
+                let is_blocked = cell == 1;
+                let node = Node::new(x, y, is_blocked, max_x, max_y);
+                hash_map.insert((x, y), node);
+            }
+        }
+
+        hash_map
     }
 }
 

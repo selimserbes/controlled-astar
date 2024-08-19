@@ -1,24 +1,5 @@
 use controlled_astar::astar::AStar;
 use controlled_astar::node::{Direction, Node};
-use std::collections::HashMap;
-
-/// Converts a 2D matrix into a HashMap of Node objects.
-/// 1 represents a blocked cell, 0 represents an open cell.
-fn matrix_to_nodes(matrix: &[Vec<i32>]) -> HashMap<(usize, usize), Node> {
-    let mut hash_map = HashMap::new();
-    let max_x = matrix.len() - 1;
-    let max_y = matrix[0].len() - 1;
-
-    for (x, row) in matrix.iter().enumerate() {
-        for (y, &cell) in row.iter().enumerate() {
-            let is_blocked = cell == 1;
-            let node = Node::new(x, y, is_blocked, max_x, max_y);
-            hash_map.insert((x, y), node);
-        }
-    }
-
-    hash_map
-}
 
 fn main() {
     // Define a 10x10 grid.
@@ -36,7 +17,7 @@ fn main() {
     ];
 
     // Convert the matrix to a HashMap of Node objects.
-    let nodes = matrix_to_nodes(&matrix);
+    let nodes = Node::matrix_to_nodes(&matrix);
 
     // Uncomment this block if you want to manually modify specific nodes.
     /*
