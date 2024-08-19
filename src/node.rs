@@ -79,8 +79,8 @@ impl Node {
         for (x, row) in matrix.iter().enumerate() {
             for (y, &cell) in row.iter().enumerate() {
                 let is_blocked = cell == 1;
-                let node = Node::new(y, x, is_blocked, max_y, max_x);
-                hash_map.insert((y, x), node);
+                let node = Node::new(x, y, is_blocked, max_x, max_y);
+                hash_map.insert((x, y), node);
             }
         }
 

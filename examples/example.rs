@@ -29,12 +29,13 @@ fn main() {
         node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
     }
 
-    if let Some(node) = nodes.get_mut(&(1, 1)) {
-        node.remove_neighbor(Direction::North);
-        node.remove_neighbor(Direction::South);
-        node.remove_neighbor(Direction::East);
-        node.remove_neighbor(Direction::West);
-        node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
+    let position_2 = (1, 1);
+
+    if let Some(node) = nodes.get_mut(&position_2) {
+        node.set_neighbor(
+            Direction::SouthEast,
+            Some((position_2.0 + 1, position_2.1 + 1)),
+        );
     }
 
     // Print the directions of all nodes.
