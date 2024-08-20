@@ -58,11 +58,11 @@ impl AStar {
         let mut current = goal;
 
         while current != start {
-            path.push(current);
+            path.push((current.1, current.0));
             current = came_from[&current];
         }
 
-        path.push(start);
+        path.push((start.1, start.0));
         path.reverse();
         path
     }
@@ -137,25 +137,29 @@ impl AStar {
         self.g_score.clear(); // Clear the g_score map
         self.f_score.clear(); // Clear the f_score map
 
-        let (g_score, f_score) = Self::initialize_scores(start, goal);
+        let (g_score, f_score) = Self::initialize_scores((start.1, start.0), (goal.1, goal.0));
         self.g_score = g_score;
         self.f_score = f_score;
 
         self.open_set.push(State {
-            cost: self.f_score[&start],
-            position: start,
+            cost: self.f_score[&(start.1, start.0)],
+            position: (start.1, start.0),
         });
 
         while let Some(current_state) = self.open_set.pop() {
             let current_position = current_state.position;
 
-            if self.is_goal_reached(current_position, goal) {
-                return Some(Self::reconstruct_path(self.came_from.clone(), start, goal));
+            if self.is_goal_reached(current_position, (goal.1, goal.0)) {
+                return Some(Self::reconstruct_path(
+                    self.came_from.clone(),
+                    (start.1, start.0),
+                    (goal.1, goal.0),
+                ));
             }
 
             if let Some(current_node) = self.nodes.get(&current_position) {
                 for neighbor_pos in self.find_neighbors(current_node) {
-                    self.process_neighbor(current_position, neighbor_pos, goal);
+                    self.process_neighbor(current_position, neighbor_pos, (goal.1, goal.0));
                 }
             }
         }

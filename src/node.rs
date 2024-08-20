@@ -86,6 +86,25 @@ impl Node {
 
         hash_map
     }
+
+    pub fn print_matrix(matrix: &[Vec<i32>], path: &Option<Vec<(usize, usize)>>) {
+        for (y, row) in matrix.iter().enumerate() {
+            for (x, &cell) in row.iter().enumerate() {
+                if let Some(ref p) = *path {
+                    if p.contains(&(x, y)) {
+                        print!("o "); // Yolu işaretle
+                    } else if cell == 1 {
+                        print!("# "); // Engeli işaretle
+                    } else {
+                        print!(". "); // Boş hücre
+                    }
+                } else {
+                    print!(". "); // Boş hücre, yol olmadığı durumda
+                }
+            }
+            println!();
+        }
+    }
 }
 
 // Implements the Hash trait for Node.

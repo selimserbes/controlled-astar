@@ -15,7 +15,6 @@ fn main() {
         vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
-
     // Convert the matrix to a HashMap of Node objects.
     let mut nodes = Node::matrix_to_nodes(&matrix);
 
@@ -54,30 +53,15 @@ fn main() {
     // Example: Find the shortest path from (0, 0) to (9, 9).
     let start = (0, 0);
     let goal = (9, 9);
-    if let Some(path) = astar.find_shortest_path(start, goal) {
-        println!(
-            "Path found from ({}, {}) to ({}, {}): {:?}",
-            start.0, start.1, goal.0, goal.1, path
-        );
-    } else {
-        println!(
-            "No path found from ({}, {}) to ({}, {}).",
-            start.0, start.1, goal.0, goal.1
-        );
-    }
+    let path = astar.find_shortest_path(start, goal);
+    Node::print_matrix(&matrix, &path);
 
-    // Example: Find the shortest path from (1, 1) to (1, 9).
-    let start = (1, 1);
-    let goal = (1, 9);
-    if let Some(path) = astar.find_shortest_path(start, goal) {
-        println!(
-            "Path found from ({}, {}) to ({}, {}): {:?}",
-            start.0, start.1, goal.0, goal.1, path
-        );
-    } else {
-        println!(
-            "No path found from ({}, {}) to ({}, {}).",
-            start.0, start.1, goal.0, goal.1
-        );
+    match path {
+        Some(path) => {
+            println!("Path: {:?}", path);
+        }
+        None => {
+            println!("No path found from {:?} to {:?}", start, goal);
+        }
     }
 }
