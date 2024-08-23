@@ -2,6 +2,13 @@ use crate::node::Node;
 use crate::priority_queue::{PriorityQueue, State};
 use std::collections::HashMap;
 
+#[derive(Debug)]
+pub enum AStarError {
+    StartNodeBlocked,
+    GoalNodeBlocked,
+    NodeNotFound,
+}
+
 /// Structure implementing the A* algorithm.
 #[derive(Debug)]
 pub struct AStar {
@@ -228,6 +235,23 @@ impl AStar {
         start: (usize, usize),
         goal: (usize, usize),
     ) -> Option<Vec<(usize, usize)>> {
+        // Check if the start or goal nodes are blocked
+        if let Some(start_node) = self.nodes.get(&start) {
+            if start_node.is_blocked {
+                return None; // Start node is blocked, no path can be found
+            }
+        } else {
+            return None; // Start node does not exist in the map
+        }
+
+        if let Some(goal_node) = self.nodes.get(&goal) {
+            if goal_node.is_blocked {
+                return None; // Goal node is blocked, no path can be found
+            }
+        } else {
+            return None; // Goal node does not exist in the map
+        }
+
         // Reset the open set and clear previous scores and path information
         self.open_set = PriorityQueue::new(); // Reset the open set
         self.came_from.clear(); // Clear the `came_from` map

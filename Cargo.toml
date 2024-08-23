@@ -6,3 +6,15 @@ edition = "2021"
 [[example]]
 name = "example"
 path = "examples/example.rs"
+
+[[test]]
+name = "unit_node"
+path = "tests/unit/node_tests.rs"
+
+[[test]]
+name = "unit_pq"
+path = "tests/unit/pq_tests.rs"
+
+[[test]]
+name = "unit_astar"
+path = "tests/unit/astar_tests.rs"

@@ -5,8 +5,7 @@
 //! Users can manually adjust neighbors of specific nodes and find the shortest
 //! path from a start point to a goal point.
 
-use controlled_astar::astar::AStar;
-use controlled_astar::node::{Direction, Node};
+use controlled_astar::{AStar, Direction, Node};
 
 /// # Main Function
 ///
