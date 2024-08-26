@@ -1,12 +1,14 @@
 use crate::node::Node;
 use crate::priority_queue::{PriorityQueue, State};
 use std::collections::HashMap;
+use std::fmt;
 
-#[derive(Debug)]
+/// Error types that can occur during A* pathfinding.
 pub enum AStarError {
     StartNodeBlocked,
     GoalNodeBlocked,
     NodeNotFound,
+    PathNotFound,
 }
 
 /// Structure implementing the A* algorithm.
@@ -223,7 +225,8 @@ impl AStar {
     /// - `goal`: The goal point as a tuple (x, y).
     ///
     /// # Returns
-    /// An `Option<Vec<(usize, usize)>>` containing the path from the start to the goal if found, or `None` if no path is found.
+    /// A `Result<Option<Vec<(usize, usize)>>, AStarError>` containing the path from the start to the goal if found,
+    /// or an `AStarError` if no path is found or if an error occurs.
     ///
     /// # Example
     /// ```rust
@@ -234,22 +237,13 @@ impl AStar {
         &mut self,
         start: (usize, usize),
         goal: (usize, usize),
-    ) -> Option<Vec<(usize, usize)>> {
-        // Check if the start or goal nodes are blocked
-        if let Some(start_node) = self.nodes.get(&start) {
-            if start_node.is_blocked {
-                return None; // Start node is blocked, no path can be found
-            }
-        } else {
-            return None; // Start node does not exist in the map
+    ) -> Result<Option<Vec<(usize, usize)>>, AStarError> {
+        // Check if the start node exists and is not blocked
+        if self.nodes.get(&start).map_or(true, |node| node.is_blocked) {
+            return Err(AStarError::StartNodeBlocked);
         }
-
-        if let Some(goal_node) = self.nodes.get(&goal) {
-            if goal_node.is_blocked {
-                return None; // Goal node is blocked, no path can be found
-            }
-        } else {
-            return None; // Goal node does not exist in the map
+        if self.nodes.get(&goal).map_or(true, |node| node.is_blocked) {
+            return Err(AStarError::GoalNodeBlocked);
         }
 
         // Reset the open set and clear previous scores and path information
@@ -276,11 +270,11 @@ impl AStar {
             // Check if the goal has been reached
             if self.is_goal_reached(current_position, (goal.1, goal.0)) {
                 // Reconstruct and return the path
-                return Some(Self::reconstruct_path(
+                return Ok(Some(Self::reconstruct_path(
                     self.came_from.clone(),
                     (start.1, start.0),
                     (goal.1, goal.0),
-                ));
+                )));
             }
 
             // Process each neighbor of the current node
@@ -291,6 +285,24 @@ impl AStar {
             }
         }
 
-        None // Return None if no path is found
+        Err(AStarError::PathNotFound)
+    }
+}
+
+impl fmt::Display for AStarError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let message = match *self {
+            AStarError::StartNodeBlocked => "The start node is blocked!",
+            AStarError::GoalNodeBlocked => "The goal node is blocked!",
+            AStarError::NodeNotFound => "One of the nodes is not found!",
+            AStarError::PathNotFound => "No path could be found!",
+        };
+        write!(f, "{}", message)
+    }
+}
+
+impl fmt::Debug for AStarError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
