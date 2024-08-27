@@ -4,3 +4,4 @@ pub mod priority_queue;
 
 pub use astar::{AStar, AStarError};
 pub use node::{Direction, Node};
+pub use priority_queue::{PriorityQueue, State};

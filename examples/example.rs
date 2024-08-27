@@ -24,7 +24,7 @@ fn main() -> Result<(), AStarError> {
         vec![0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
         vec![0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
         vec![0, 1, 1, 1, 0, 1, 0, 1, 0, 0],
-        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
 
@@ -42,6 +42,7 @@ fn main() -> Result<(), AStarError> {
         node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
     }
 
+    // Uncomment if you want to block the node at position (9, 9).
     // if let Some(node) = nodes.get_mut(&(9, 9)) {
     //     node.set_blocked(true)
     // }
@@ -71,18 +72,16 @@ fn main() -> Result<(), AStarError> {
     // Example: Find the shortest path from (0, 0) to (9, 9).
     let start = (0, 0);
     let goal = (9, 9);
+    let result = astar.find_shortest_path(start, goal);
 
-    match astar.find_shortest_path(start, goal) {
-        Ok(Some(path)) => {
-            Node::print_matrix(&matrix, &Some(path.clone()));
-            println!("Path: {:?}", path);
-        }
-        Ok(None) => {
-            println!("No path found from {:?} to {:?}", start, goal);
-        }
-        Err(e) => {
-            println!("Error: {}", e);
-        }
+    // Handle the result of the A* algorithm.
+    if let Ok(Some(path)) = result {
+        // Print the matrix with the found path.
+        Node::print_matrix(&matrix, &Some(path.clone()));
+        println!("Path found: {:?}", path);
+    } else if let Err(e) = result {
+        // Print an error message if something went wrong.
+        println!("An error occurred: {}", e);
     }
     Ok(())
 }

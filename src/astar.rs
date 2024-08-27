@@ -5,12 +5,11 @@ use std::fmt;
 
 /// Error types that can occur during A* pathfinding.
 pub enum AStarError {
-    StartNodeBlocked,
-    GoalNodeBlocked,
-    NodeNotFound,
-    PathNotFound,
+    StartNodeBlocked((usize, usize)),
+    GoalNodeBlocked((usize, usize)),
+    NodeNotFound((usize, usize)),
+    PathNotFound((usize, usize)),
 }
-
 /// Structure implementing the A* algorithm.
 #[derive(Debug)]
 pub struct AStar {
@@ -218,6 +217,42 @@ impl AStar {
         }
     }
 
+    /// Validates that the start and goal nodes exist and are not blocked.
+    ///
+    /// # Parameters
+    /// - `start`: The starting point as a tuple (x, y).
+    /// - `goal`: The goal point as a tuple (x, y).
+    ///
+    /// # Returns
+    /// A result indicating success or an `AStarError` if validation fails.
+    fn validate_nodes(
+        &self,
+        start: (usize, usize),
+        goal: (usize, usize),
+    ) -> Result<(), AStarError> {
+        // Check if the start node exists
+        if !self.nodes.contains_key(&start) {
+            return Err(AStarError::NodeNotFound(start));
+        }
+
+        // Check if the goal node exists
+        if !self.nodes.contains_key(&goal) {
+            return Err(AStarError::NodeNotFound(goal));
+        }
+
+        // Check if the start node is blocked
+        if self.nodes.get(&start).map_or(true, |node| node.is_blocked) {
+            return Err(AStarError::StartNodeBlocked(start));
+        }
+
+        // Check if the goal node is blocked
+        if self.nodes.get(&goal).map_or(true, |node| node.is_blocked) {
+            return Err(AStarError::GoalNodeBlocked(goal));
+        }
+
+        Ok(())
+    }
+
     /// Finds the shortest path from start to goal using the A* algorithm.
     ///
     /// # Parameters
@@ -238,13 +273,8 @@ impl AStar {
         start: (usize, usize),
         goal: (usize, usize),
     ) -> Result<Option<Vec<(usize, usize)>>, AStarError> {
-        // Check if the start node exists and is not blocked
-        if self.nodes.get(&start).map_or(true, |node| node.is_blocked) {
-            return Err(AStarError::StartNodeBlocked);
-        }
-        if self.nodes.get(&goal).map_or(true, |node| node.is_blocked) {
-            return Err(AStarError::GoalNodeBlocked);
-        }
+        // Validate nodes
+        self.validate_nodes(start, goal)?;
 
         // Reset the open set and clear previous scores and path information
         self.open_set = PriorityQueue::new(); // Reset the open set
@@ -263,9 +293,11 @@ impl AStar {
             position: (start.1, start.0),
         });
 
+        let mut current_position = (start.1, start.0);
+
         // Main loop of the A* algorithm
         while let Some(current_state) = self.open_set.pop() {
-            let current_position = current_state.position;
+            current_position = current_state.position;
 
             // Check if the goal has been reached
             if self.is_goal_reached(current_position, (goal.1, goal.0)) {
@@ -285,22 +317,28 @@ impl AStar {
             }
         }
 
-        Err(AStarError::PathNotFound)
+        Err(AStarError::PathNotFound(current_position))
     }
 }
 
 impl fmt::Display for AStarError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let message = match *self {
-            AStarError::StartNodeBlocked => "The start node is blocked!",
-            AStarError::GoalNodeBlocked => "The goal node is blocked!",
-            AStarError::NodeNotFound => "One of the nodes is not found!",
-            AStarError::PathNotFound => "No path could be found!",
-        };
-        write!(f, "{}", message)
+        match *self {
+            AStarError::StartNodeBlocked(coord) => {
+                write!(f, "The start node at position {:?} is blocked!", coord)
+            }
+            AStarError::GoalNodeBlocked(coord) => {
+                write!(f, "The goal node at position {:?} is blocked!", coord)
+            }
+            AStarError::NodeNotFound(coord) => {
+                write!(f, "The node at position {:?} was not found!", coord)
+            }
+            AStarError::PathNotFound(coord) => {
+                write!(f, "Path not found! Last checked position was {:?}.", coord)
+            }
+        }
     }
 }
-
 impl fmt::Debug for AStarError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self)

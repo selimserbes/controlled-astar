@@ -18,3 +18,11 @@ path = "tests/unit/pq_tests.rs"
 [[test]]
 name = "unit_astar"
 path = "tests/unit/astar_tests.rs"
+
+[[test]]
+name = "e2e"
+path = "tests/e2e/tests.rs"
+
+[[test]]
+name = "integration"
+path = "tests/integration/tests.rs"
