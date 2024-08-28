@@ -51,6 +51,24 @@ Y 0 | . . . . # . . . . . |
 - Y ↑ Move Up (Decreasing Y Coordinate)
 - Y ↓ Move Down (Increasing Y Coordinate)
 
+### Key Concepts
+
+- **`AStar::new(nodes: HashMap<(usize, usize), Node>) -> AStar`**: Creates a new A\* algorithm instance using the provided node map. This initializes the pathfinding algorithm and prepares it to find the shortest path between nodes.
+
+- **`Node::matrix_to_nodes(matrix: &Vec<Vec<u8>>) -> HashMap<(usize, usize), Node>`**: Converts a 2D matrix (with open cells and blocked cells) into a `HashMap` of `Node` objects. Each cell in the matrix is represented as a `Node`, allowing for pathfinding operations to be performed.
+
+- **`find_shortest_path(start: (usize, usize), goal: (usize, usize)) -> Result<Vec<(usize, usize)>, AStarError>`**: Finds the shortest path between the specified start and goal positions. Returns a vector of cells representing the path if successful, or an error if the pathfinding fails.
+
+- **`print_matrix(matrix: &Vec<Vec<u8>>, path: &Vec<(usize, usize)>)`**: Prints a visual representation of the matrix with the given path highlighted. This function helps to visualize the pathfinding result on the matrix.
+
+- **`remove_neighbor(Direction)`**: Removes a neighbor in the specified direction (e.g., North, South, East, West, etc.) from a node. This is used to restrict movement options in that direction.
+
+- **`set_neighbor(Direction, Option<(usize, usize)>)`**: Sets a neighbor for a node in the specified direction. The neighbor is indicated by its position `(x, y)`.
+
+- **`get_directions()`**: Returns a list of directions that are currently available from the node. This is useful for debugging or visualizing the movement options for a node.
+
+- **`set_blocked(bool)`**: Marks the node as blocked or unblocked. A blocked node will not be considered in pathfinding calculations, effectively acting as an obstacle.
+
 ### Basic Example
 
 Here's a basic example of how to use the `controlled_astar` library:
@@ -159,24 +177,6 @@ fn main() -> Result<(), AStarError> {
     Ok(())
 }
 ```
-
-### Key Concepts
-
-- **`AStar::new(nodes: HashMap<(usize, usize), Node>) -> AStar`**: Creates a new A\* algorithm instance using the provided node map. This initializes the pathfinding algorithm and prepares it to find the shortest path between nodes.
-
-- **`Node::matrix_to_nodes(matrix: &Vec<Vec<u8>>) -> HashMap<(usize, usize), Node>`**: Converts a 2D matrix (with open cells and blocked cells) into a `HashMap` of `Node` objects. Each cell in the matrix is represented as a `Node`, allowing for pathfinding operations to be performed.
-
-- **`find_shortest_path(start: (usize, usize), goal: (usize, usize)) -> Result<Vec<(usize, usize)>, AStarError>`**: Finds the shortest path between the specified start and goal positions. Returns a vector of cells representing the path if successful, or an error if the pathfinding fails.
-
-- **`print_matrix(matrix: &Vec<Vec<u8>>, path: &Vec<(usize, usize)>)`**: Prints a visual representation of the matrix with the given path highlighted. This function helps to visualize the pathfinding result on the matrix.
-
-- **`remove_neighbor(Direction)`**: Removes a neighbor in the specified direction (e.g., North, South, East, West, etc.) from a node. This is used to restrict movement options in that direction.
-
-- **`set_neighbor(Direction, Option<(usize, usize)>)`**: Sets a neighbor for a node in the specified direction. The neighbor is indicated by its position `(x, y)`.
-
-- **`get_directions()`**: Returns a list of directions that are currently available from the node. This is useful for debugging or visualizing the movement options for a node.
-
-- **`set_blocked(bool)`**: Marks the node as blocked or unblocked. A blocked node will not be considered in pathfinding calculations, effectively acting as an obstacle.
 
 ## Documentation
 
