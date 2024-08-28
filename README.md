@@ -23,6 +23,34 @@ controlled_astar = "0.1.4"
 
 ## Usage
 
+### Coordinate System and Example Map
+
+The following 10x10 grid map is used to demonstrate the coordinate system and movement directions:
+
+```
+   X → +
+   0 1 2 3 4 5 6 7 8 9
+   +---------------------+
+Y 0| . . . . # . . . . . |
+↓ 1| . . # . # . # # # . |
++ 2| . . . . . . . . # . |
+  3| . . . # # # . . . . |
+  4| # # . . . . . . . . |
+  5| . . . # # . . . # . |
+  6| . # . . . . . . # . |
+  7| . # # # . # . # . . |
+  8| . . . . . . . . . . |
+  9| . # . # # . . # # . |
+   +---------------------+
+```
+
+#### Coordinate Directions:
+
+- X → Move Right (Increasing X Coordinate)
+- X ← Move Left (Decreasing X Coordinate)
+- Y ↑ Move Up (Decreasing Y Coordinate)
+- Y ↓ Move Down (Increasing Y Coordinate)
+
 ### Basic Example
 
 Here's a basic example of how to use the `controlled_astar` library:
@@ -131,33 +159,6 @@ fn main() -> Result<(), AStarError> {
     Ok(())
 }
 ```
-
-### Coordinate System and Example Map
-
-The following 10x10 grid map is used to demonstrate the coordinate system and movement directions:
-
-```X → +
-   0 1 2 3 4 5 6 7 8 9
-   +---------------------+
-Y 0| . . . . # . . . . . |
-↓ 1| . . # . # . # # # . |
-+ 2| . . . . . . . . # . |
-  3| . . . # # # . . . . |
-  4| # # . . . . . . . . |
-  5| . . . # # . . . # . |
-  6| . # . . . . . . # . |
-  7| . # # # . # . # . . |
-  8| . . . . . . . . . . |
-  9| . # . # # . . # # . |
-   +---------------------+
-```
-
-#### Coordinate Directions:
-
-- X → Move Right (Increasing X Coordinate)
-- X ← Move Left (Decreasing X Coordinate)
-- Y ↑ Move Up (Decreasing Y Coordinate)
-- Y ↓ Move Down (Increasing Y Coordinate)
 
 ### Key Concepts
 
