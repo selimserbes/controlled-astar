@@ -18,7 +18,7 @@ Add `controlled_astar` as a dependency in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-controlled_astar = "0.1.4"
+controlled_astar = "1.0.0"
 ```
 
 ## Usage

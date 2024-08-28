@@ -43,3 +43,13 @@
 ### Notes
 
 - This release includes updates to the documentation and enhancements to the testing framework.
+
+## [1.0.0] - 2024-08-28
+
+### User Documentation and Guide
+
+- A comprehensive user documentation and guide has been prepared. This resource provides detailed information on how to use the library and its key features.
+
+### CI/CD Integration
+
+- Continuous integration and continuous delivery (CI/CD) processes have been added. Code changes are now automatically tested, and code quality is continuously monitored.
