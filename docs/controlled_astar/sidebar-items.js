@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["astar","node","priority_queue"]};

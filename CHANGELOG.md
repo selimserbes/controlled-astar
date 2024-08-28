@@ -29,3 +29,17 @@
 ### Code Refinements:
 
 - Redundant code and imports have been cleaned up to ensure a cleaner and more maintainable codebase.
+
+## [0.1.4] - 2024-08-28
+
+### Documentation
+
+- Updated API documentation and usage guides.
+
+### Testing
+
+- Added and expanded unit and integration tests to improve coverage and reliability.
+
+### Notes
+
+- This release includes updates to the documentation and enhancements to the testing framework.

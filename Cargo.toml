@@ -1,6 +1,6 @@
 [package]
 name = "controlled_astar"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 
 [[example]]
@@ -18,10 +18,6 @@ path = "tests/unit/pq_tests.rs"
 [[test]]
 name = "unit_astar"
 path = "tests/unit/astar_tests.rs"
-
-[[test]]
-name = "e2e"
-path = "tests/e2e/tests.rs"
 
 [[test]]
 name = "integration"

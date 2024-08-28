@@ -1,17 +1,44 @@
 //! # A* Pathfinding Example
 //!
-//! This example demonstrates finding the shortest path using the A* algorithm
-//! on a 10x10 grid. The grid consists of open (0) and blocked (1) cells.
-//! Users can manually adjust neighbors of specific nodes and find the shortest
-//! path from a start point to a goal point.
+//! This example demonstrates how to use the A* pathfinding algorithm to find
+//! the shortest path on a 10x10 grid. The grid consists of open cells (0)
+//! and blocked cells (1). Users can manually adjust the neighbors and block
+//! statuses of specific nodes and find the shortest path from a start point to
+//! a goal point.
+//!
+//! The example includes:
+//! - Defining a 10x10 grid with open and blocked cells
+//! - Converting the grid into a map of `Node` objects
+//! - Manually adjusting neighbors and blocking nodes
+//! - Using the A* algorithm to find the shortest path from a start to a goal
+//! - Printing the matrix with the found path and handling any errors
 
 use controlled_astar::{AStar, AStarError, Direction, Node};
 
 /// # Main Function
 ///
-/// This function defines a 10x10 grid, converts it into `Node` objects,
-/// manually adjusts the neighbors of specific nodes, and then uses the A*
-/// algorithm to find the shortest path.
+/// This function sets up a 10x10 grid, converts it into `Node` objects, and
+/// then demonstrates finding the shortest path using the A* algorithm.
+///
+/// # Grid Definition
+/// The grid is defined as a 2D vector where:
+/// - `0` represents an open cell
+/// - `1` represents a blocked cell
+///
+/// # Node Adjustment
+/// The example manually adjusts specific nodes to modify their neighbors:
+/// - The node at position (0, 0) has its southern and eastern neighbors removed,
+///   and a southeastern neighbor added.
+/// - The node at position (1, 1) has a southeastern neighbor set.
+///
+/// # Pathfinding
+/// The A* algorithm is used to find the shortest path from the start position
+/// `(0, 0)` to the goal position `(9, 9)`.
+///
+/// # Output
+/// - If a path is found, prints the matrix with the path highlighted.
+/// - If an error occurs, prints the error message.
+///
 fn main() -> Result<(), AStarError> {
     // Define a 10x10 grid.
     // This matrix uses 0 for open cells and 1 for blocked cells.
@@ -24,7 +51,7 @@ fn main() -> Result<(), AStarError> {
         vec![0, 0, 0, 1, 1, 0, 0, 0, 1, 0],
         vec![0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
         vec![0, 1, 1, 1, 0, 1, 0, 1, 0, 0],
-        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
 
@@ -33,13 +60,16 @@ fn main() -> Result<(), AStarError> {
     let mut nodes = Node::matrix_to_nodes(&matrix);
 
     // Manually adjust specific nodes if needed.
-    let position = (0, 0);
-    if let Some(node) = nodes.get_mut(&position) {
+    let start_position = (0, 0);
+    if let Some(node) = nodes.get_mut(&start_position) {
         // Removes the southern and eastern neighbors.
         node.remove_neighbor(Direction::South);
         node.remove_neighbor(Direction::East);
         // Adds a southeastern neighbor.
-        node.set_neighbor(Direction::SouthEast, Some((position.0 + 1, position.1 + 1)));
+        node.set_neighbor(
+            Direction::SouthEast,
+            Some((start_position.0 + 1, start_position.1 + 1)),
+        );
     }
 
     // Uncomment if you want to block the node at position (9, 9).
@@ -47,24 +77,30 @@ fn main() -> Result<(), AStarError> {
     //     node.set_blocked(true)
     // }
 
-    let position_2 = (1, 1);
-    if let Some(node) = nodes.get_mut(&position_2) {
+    // Manually adjust specific nodes if needed.
+    let adjacent_position = (1, 1);
+    if let Some(node) = nodes.get_mut(&adjacent_position) {
         // Sets the southeastern neighbor for this node.
         node.set_neighbor(
             Direction::SouthEast,
-            Some((position_2.0 + 1, position_2.1 + 1)),
+            Some((adjacent_position.0 + 1, adjacent_position.1 + 1)),
         );
     }
 
-    // Print the directions of all nodes.
-    for ((x, y), node) in nodes.iter() {
-        println!("Node ({}, {}): {:?}", x, y, node.get_directions());
-    }
+    // Uncomment if you want to print the directions of all nodes.
+    // for ((x, y), node) in nodes.iter() {
+    //     println!("Node ({}, {}): {:?}", x, y, node.get_directions());
+    // }
 
-    // Print the directions of the specific node at position (1, 1).
-    if let Some(node) = nodes.get(&(1, 1)) {
-        println!("Node ({}, {}): {:?}", 1, 1, node.get_directions());
-    }
+    // Uncomment if you want to see the modified directions of the node at (1, 1).
+    // if let Some(node) = nodes.get(&(adjacent_position)) {
+    //     println!(
+    //         "Node ({}, {}): {:?}",
+    //         adjacent_position.0,
+    //         adjacent_position.1,
+    //         node.get_directions()
+    //     );
+    // }
 
     // Initialize AStar with the nodes map.
     let mut astar = AStar::new(nodes);
@@ -75,13 +111,16 @@ fn main() -> Result<(), AStarError> {
     let result = astar.find_shortest_path(start, goal);
 
     // Handle the result of the A* algorithm.
-    if let Ok(Some(path)) = result {
-        // Print the matrix with the found path.
-        Node::print_matrix(&matrix, &Some(path.clone()));
-        println!("Path found: {:?}", path);
-    } else if let Err(e) = result {
-        // Print an error message if something went wrong.
-        println!("An error occurred: {}", e);
+    match result {
+        Ok(path) => {
+            // Print the matrix with the found path.
+            Node::print_matrix(&matrix, &path);
+            println!("Path found: {:?}", path);
+        }
+        Err(e) => {
+            // Print an error message using the Display implementation of AStarError.
+            println!("An error occurred: {}", e);
+        }
     }
     Ok(())
 }

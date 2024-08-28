@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["controlled_astar","example"];

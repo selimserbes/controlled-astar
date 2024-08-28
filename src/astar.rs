@@ -322,6 +322,14 @@ impl AStar {
 }
 
 impl fmt::Display for AStarError {
+    /// Formats the error for display in user-facing contexts.
+    ///
+    /// # Example
+    /// ```rust
+    /// let error = AStarError::StartNodeBlocked((0, 0));
+    /// println!("{}", error);
+    /// // Output: The start node at position (0, 0) is blocked!
+    /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             AStarError::StartNodeBlocked(coord) => {
@@ -340,6 +348,14 @@ impl fmt::Display for AStarError {
     }
 }
 impl fmt::Debug for AStarError {
+    /// Formats the error for debugging purposes.
+    ///
+    /// # Example
+    /// ```rust
+    /// let error = AStarError::GoalNodeBlocked((5, 5));
+    /// println!("{:?}", error);
+    /// // Output: GoalNodeBlocked((5, 5))
+    /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self)
     }

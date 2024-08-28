@@ -35,8 +35,8 @@ mod tests {
             Err(AStarError::PathNotFound(_)) => {
                 panic!("Expected a path, but got PathNotFound error.");
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -59,8 +59,8 @@ mod tests {
             Err(AStarError::PathNotFound(_)) => {
                 panic!("Expected a path, but got PathNotFound error.");
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -85,8 +85,8 @@ mod tests {
             Err(AStarError::PathNotFound(_)) => {
                 panic!("Expected a path, but got PathNotFound error.");
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -112,8 +112,8 @@ mod tests {
             Err(AStarError::PathNotFound(_)) => {
                 // Test passes because PathNotFound error is expected
             }
-            Err(e) => {
-                panic!("Expected PathNotFound error but got: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -137,8 +137,8 @@ mod tests {
             Err(AStarError::StartNodeBlocked(_)) => {
                 // Test passes because StartNodeBlocked error is expected
             }
-            Err(e) => {
-                panic!("Expected StartNodeBlocked error but got: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -162,8 +162,8 @@ mod tests {
             Err(AStarError::GoalNodeBlocked(_)) => {
                 // Test passes because GoalNodeBlocked error is expected
             }
-            Err(e) => {
-                panic!("Expected GoalNodeBlocked error but got: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -189,8 +189,8 @@ mod tests {
             Err(AStarError::PathNotFound(_)) => {
                 panic!("Expected a path, but got PathNotFound error.");
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -212,8 +212,8 @@ mod tests {
             Err(AStarError::NodeNotFound(_)) => {
                 // Test passes because NodeNotFound error is expected
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
@@ -235,8 +235,8 @@ mod tests {
             Err(AStarError::NodeNotFound(_)) => {
                 // Test passes because NodeNotFound error is expected
             }
-            Err(e) => {
-                panic!("An error occurred: {:?}", e);
+            _ => {
+                panic!("Unexpected result or error occurred: {:?}", result);
             }
         }
     }
