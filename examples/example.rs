@@ -73,9 +73,9 @@ fn main() -> Result<(), AStarError> {
     }
 
     // Uncomment if you want to block the node at position (9, 9).
-    // if let Some(node) = nodes.get_mut(&(9, 9)) {
-    //     node.set_blocked(true)
-    // }
+    /* if let Some(node) = nodes.get_mut(&(9, 9)) {
+        node.set_blocked(true)
+    }*/
 
     // Manually adjust specific nodes if needed.
     let adjacent_position = (1, 1);
@@ -88,19 +88,19 @@ fn main() -> Result<(), AStarError> {
     }
 
     // Uncomment if you want to print the directions of all nodes.
-    // for ((x, y), node) in nodes.iter() {
-    //     println!("Node ({}, {}): {:?}", x, y, node.get_directions());
-    // }
+    /* for ((x, y), node) in nodes.iter() {
+         println!("Node ({}, {}): {:?}", x, y, node.get_directions());
+    }*/
 
     // Uncomment if you want to see the modified directions of the node at (1, 1).
-    // if let Some(node) = nodes.get(&(adjacent_position)) {
-    //     println!(
-    //         "Node ({}, {}): {:?}",
-    //         adjacent_position.0,
-    //         adjacent_position.1,
-    //         node.get_directions()
-    //     );
-    // }
+    /* if let Some(node) = nodes.get(&(adjacent_position)) {
+        println!(
+            "Node ({}, {}): {:?}",
+            adjacent_position.0,
+            adjacent_position.1,
+            node.get_directions()
+        );
+    }*/
 
     // Initialize AStar with the nodes map.
     let mut astar = AStar::new(nodes);
