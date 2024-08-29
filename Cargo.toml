@@ -1,6 +1,6 @@
 [package]
 name = "controlled_astar"
-version = "1.0.0" 
+version = "1.0.1" 
 authors = ["Selim Serbes <omnicoder.ceng@gmail.com>"] 
 edition = "2021"
 description = "A Rust library that provides an enhanced A* pathfinding algorithm with controllable node directions and block statuses, ideal for complex pathfinding scenarios."

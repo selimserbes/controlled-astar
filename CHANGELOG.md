@@ -53,3 +53,10 @@
 ### CI/CD Integration
 
 - Continuous integration and continuous delivery (CI/CD) processes have been added. Code changes are now automatically tested, and code quality is continuously monitored.
+
+## [1.0.1] - 2024-08-29
+
+### Changed
+
+- Updated all references from `matrix` to `grid` throughout the codebase, including variable names, documentation, and comments.
+- Improved consistency in terminology across the project for better clarity and alignment with pathfinding conventions.
