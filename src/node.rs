@@ -140,29 +140,29 @@ impl Node {
         self.neighbors.keys().cloned().collect()
     }
 
-    /// Converts a 2D matrix into `Node` objects.
+    /// Converts a 2D grid into `Node` objects.
     ///
     /// # Parameters
-    /// - `matrix`: The 2D matrix where `1` represents a blocked node and `0` represents a free node.
+    /// - `grid`: The 2D grid where `1` represents a blocked node and `0` represents a free node.
     ///
     /// # Returns
     /// A `HashMap` containing `Node` objects mapped by their positions.
     ///
     /// # Example
     /// ```rust
-    /// let matrix = vec![
+    /// let grid = vec![
     ///     vec![0, 1, 0],
     ///     vec![0, 0, 1],
     /// ];
-    /// let nodes = Node::matrix_to_nodes(&matrix);
+    /// let nodes = Node::grid_to_nodes(&grid);
     /// ```
-    pub fn matrix_to_nodes(matrix: &[Vec<i32>]) -> HashMap<(usize, usize), Node> {
+    pub fn grid_to_nodes(grid: &[Vec<i32>]) -> HashMap<(usize, usize), Node> {
         let mut hash_map = HashMap::new();
-        let max_x = matrix.len() - 1;
-        let max_y = matrix[0].len() - 1;
+        let max_x = grid.len() - 1;
+        let max_y = grid[0].len() - 1;
 
-        // Iterate over the matrix to create nodes
-        for (x, row) in matrix.iter().enumerate() {
+        // Iterate over the grid to create nodes
+        for (x, row) in grid.iter().enumerate() {
             for (y, &cell) in row.iter().enumerate() {
                 let is_blocked = cell == 1;
                 // Create a new Node and insert it into the HashMap
@@ -174,24 +174,24 @@ impl Node {
         hash_map
     }
 
-    /// Prints a 2D matrix and an optional path to the screen.
+    /// Prints a 2D grid and an optional path to the screen.
     ///
     /// # Parameters
-    /// - `matrix`: The 2D matrix.
-    /// - `path`: An optional vector representing the path to be printed on the matrix.
+    /// - `grid`: The 2D grid.
+    /// - `path`: An optional vector representing the path to be printed on the grid.
     ///
     /// # Example
     /// ```rust
-    /// let matrix = vec![
+    /// let grid = vec![
     ///     vec![0, 0, 0],
     ///     vec![0, 1, 0],
     /// ];
     /// let path = Some(vec![(0, 0), (1, 1)]);
-    /// Node::print_matrix(&matrix, &path);
+    /// Node::print_grid(&grid, &path);
     /// ```
-    pub fn print_matrix(matrix: &[Vec<i32>], path: &Option<Vec<(usize, usize)>>) {
-        // Iterate over each row in the matrix
-        for (y, row) in matrix.iter().enumerate() {
+    pub fn print_grid(grid: &[Vec<i32>], path: &Option<Vec<(usize, usize)>>) {
+        // Iterate over each row in the grid
+        for (y, row) in grid.iter().enumerate() {
             // Iterate over each cell in the row
             for (x, &cell) in row.iter().enumerate() {
                 // Check if the path is defined

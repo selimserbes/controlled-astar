@@ -2,24 +2,24 @@
 mod tests {
     use controlled_astar::{AStar, AStarError, Node}; // Import the necessary modules and functions
 
-    // Helper function to create a matrix and initialize AStar
-    // Converts a matrix to Node structures and initializes the AStar algorithm with these nodes.
-    fn setup_astar(matrix: Vec<Vec<i32>>) -> AStar {
-        let nodes = Node::matrix_to_nodes(&matrix);
+    // Helper function to create a grid and initialize AStar
+    // Converts a grid to Node structures and initializes the AStar algorithm with these nodes.
+    fn setup_astar(grid: Vec<Vec<i32>>) -> AStar {
+        let nodes = Node::grid_to_nodes(&grid);
         AStar::new(nodes)
     }
 
     #[test]
     fn test_astar_basic_pathfinding() {
         // Define a simple 5x5 grid with no obstacles
-        let matrix = vec![
+        let grid = vec![
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -47,14 +47,14 @@ mod tests {
     #[test]
     fn test_astar_with_obstacles() {
         // Define a 5x5 grid with obstacles
-        let matrix = vec![
+        let grid = vec![
             vec![0, 0, 0, 0, 0],
             vec![0, 1, 1, 1, 0],
             vec![0, 1, 0, 1, 0],
             vec![0, 1, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -82,8 +82,8 @@ mod tests {
     #[test]
     fn test_astar_path_not_found() {
         // Define a 3x3 grid where the path is blocked
-        let matrix = vec![vec![0, 0, 0], vec![1, 1, 1], vec![0, 0, 0]];
-        let mut astar = setup_astar(matrix);
+        let grid = vec![vec![0, 0, 0], vec![1, 1, 1], vec![0, 0, 0]];
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -109,14 +109,14 @@ mod tests {
     #[test]
     fn test_astar_start_and_end_same() {
         // Define a 5x5 grid with no obstacles
-        let matrix = vec![
+        let grid = vec![
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0],
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set the start and goal positions to be the same
         let start = (2, 2);
@@ -143,7 +143,7 @@ mod tests {
     #[test]
     fn test_astar_large_map() {
         // Define a 10x10 grid with some obstacles
-        let matrix = vec![
+        let grid = vec![
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             vec![0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
@@ -155,7 +155,7 @@ mod tests {
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions for the large map
         let start = (0, 0);
@@ -183,8 +183,8 @@ mod tests {
     #[test]
     fn test_astar_small_grid() {
         // Define a 2x2 grid with a single obstacle
-        let matrix = vec![vec![0, 0], vec![1, 0]];
-        let mut astar = setup_astar(matrix);
+        let grid = vec![vec![0, 0], vec![1, 0]];
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -212,7 +212,7 @@ mod tests {
     #[test]
     fn test_astar_dense_obstacles() {
         // Define a grid with dense obstacles and a clear row at the bottom
-        let matrix = vec![
+        let grid = vec![
             vec![0, 1, 1, 1, 1, 0],
             vec![0, 1, 1, 1, 1, 0],
             vec![0, 1, 1, 1, 1, 0],
@@ -220,7 +220,7 @@ mod tests {
             vec![0, 1, 1, 1, 1, 0],
             vec![0, 0, 0, 0, 0, 0],
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -248,8 +248,8 @@ mod tests {
     #[test]
     fn test_astar_start_node_blocked() {
         // Define a grid where the start node is blocked
-        let matrix = vec![vec![1, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
-        let mut astar = setup_astar(matrix);
+        let grid = vec![vec![1, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0); // Start node is blocked
@@ -275,12 +275,12 @@ mod tests {
     #[test]
     fn test_astar_goal_node_blocked() {
         // Define a grid where the goal node is blocked
-        let matrix = vec![
+        let grid = vec![
             vec![0, 0, 0],
             vec![0, 0, 0],
             vec![0, 0, 1], // Goal node is blocked
         ];
-        let mut astar = setup_astar(matrix);
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
@@ -306,12 +306,12 @@ mod tests {
     #[test]
     fn test_astar_goal_node_not_found() {
         // Define a grid with valid nodes, but the goal is out of bounds
-        let matrix = vec![vec![0, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
-        let mut astar = setup_astar(matrix);
+        let grid = vec![vec![0, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
         let start = (0, 0);
-        let goal = (3, 3); // Goal node is outside the matrix bounds
+        let goal = (3, 3); // Goal node is outside the grid bounds
 
         // Perform the A* search to find the shortest path
         let result = astar.find_shortest_path(start, goal);
@@ -333,11 +333,11 @@ mod tests {
     #[test]
     fn test_astar_start_node_not_found() {
         // Define a grid with valid nodes, but the start is out of bounds
-        let matrix = vec![vec![0, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
-        let mut astar = setup_astar(matrix);
+        let grid = vec![vec![0, 0, 0], vec![0, 0, 0], vec![0, 0, 0]];
+        let mut astar = setup_astar(grid);
 
         // Set start and goal positions
-        let start = (4, 4); // Start node is outside the matrix bounds
+        let start = (4, 4); // Start node is outside the grid bounds
         let goal = (2, 2);
 
         // Perform the A* search to find the shortest path

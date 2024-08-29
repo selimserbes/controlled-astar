@@ -1,12 +1,12 @@
 [package]
 name = "controlled_astar"
-version = "1.0.0" # veya uygun sürüm numarasını girin
-authors = ["Selim Serbes <omnicoder.ceng@gmail.com>"] # Kendi adınızı ve e-posta adresinizi girin
+version = "1.0.0" 
+authors = ["Selim Serbes <omnicoder.ceng@gmail.com>"] 
 edition = "2021"
 description = "A Rust library that provides an enhanced A* pathfinding algorithm with controllable node directions and block statuses, ideal for complex pathfinding scenarios."
 license = "MIT"
-repository = "https://github.com/selimserbes/controlled-astar" # GitHub reposunun URL'sini güncelleyin
-documentation = "https://docs.rs/controlled_astar" # API dokümantasyonunun URL'sini güncelleyin
+repository = "https://github.com/selimserbes/controlled-astar" 
+documentation = "https://docs.rs/controlled_astar" 
 readme = "README.md"
 keywords = ["pathfinding", "astar", "algorithm", "grid", "navigation"]
 categories = ["algorithms"]

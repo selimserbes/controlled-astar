@@ -11,7 +11,7 @@
 //! - Converting the grid into a map of `Node` objects
 //! - Manually adjusting neighbors and blocking nodes
 //! - Using the A* algorithm to find the shortest path from a start to a goal
-//! - Printing the matrix with the found path and handling any errors
+//! - Printing the grid with the found path and handling any errors
 
 use controlled_astar::{AStar, AStarError, Direction, Node};
 
@@ -20,7 +20,7 @@ use controlled_astar::{AStar, AStarError, Direction, Node};
 /// This function sets up a 10x10 grid, converts it into `Node` objects, and
 /// then demonstrates finding the shortest path using the A* algorithm.
 ///
-/// # Grid Definition
+/// # grid Definition
 /// The grid is defined as a 2D vector where:
 /// - `0` represents an open cell
 /// - `1` represents a blocked cell
@@ -36,13 +36,13 @@ use controlled_astar::{AStar, AStarError, Direction, Node};
 /// `(0, 0)` to the goal position `(9, 9)`.
 ///
 /// # Output
-/// - If a path is found, prints the matrix with the path highlighted.
+/// - If a path is found, prints the grid with the path highlighted.
 /// - If an error occurs, prints the error message.
 ///
 fn main() -> Result<(), AStarError> {
     // Define a 10x10 grid.
-    // This matrix uses 0 for open cells and 1 for blocked cells.
-    let matrix = vec![
+    // This grid uses 0 for open cells and 1 for blocked cells.
+    let grid = vec![
         vec![0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         vec![0, 0, 1, 0, 1, 0, 1, 1, 1, 0],
         vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -55,9 +55,9 @@ fn main() -> Result<(), AStarError> {
         vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
 
-    // Convert the matrix to a HashMap of `Node` objects.
-    // Each cell in the matrix is represented by a `Node` object.
-    let mut nodes = Node::matrix_to_nodes(&matrix);
+    // Convert the grid to a HashMap of `Node` objects.
+    // Each cell in the grid is represented by a `Node` object.
+    let mut nodes = Node::grid_to_nodes(&grid);
 
     // Manually adjust specific nodes if needed.
     let start_position = (0, 0);
@@ -113,8 +113,8 @@ fn main() -> Result<(), AStarError> {
     // Handle the result of the A* algorithm.
     match result {
         Ok(path) => {
-            // Print the matrix with the found path.
-            Node::print_matrix(&matrix, &path);
+            // Print the grid with the found path.
+            Node::print_grid(&grid, &path);
             println!("Path found: {:?}", path);
         }
         Err(e) => {

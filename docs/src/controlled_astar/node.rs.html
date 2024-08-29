@@ -373,29 +373,29 @@
         </span><span class="self">self</span>.neighbors.keys().cloned().collect()
     }
 
-    <span class="doccomment">/// Converts a 2D matrix into `Node` objects.
+    <span class="doccomment">/// Converts a 2D grid into `Node` objects.
     ///
     /// # Parameters
-    /// - `matrix`: The 2D matrix where `1` represents a blocked node and `0` represents a free node.
+    /// - `grid`: The 2D grid where `1` represents a blocked node and `0` represents a free node.
     ///
     /// # Returns
     /// A `HashMap` containing `Node` objects mapped by their positions.
     ///
     /// # Example
     /// ```rust
-    /// let matrix = vec![
+    /// let grid = vec![
     ///     vec![0, 1, 0],
     ///     vec![0, 0, 1],
     /// ];
-    /// let nodes = Node::matrix_to_nodes(&amp;matrix);
+    /// let nodes = Node::grid_to_nodes(&amp;grid);
     /// ```
-    </span><span class="kw">pub fn </span>matrix_to_nodes(matrix: <span class="kw-2">&amp;</span>[Vec&lt;i32&gt;]) -&gt; HashMap&lt;(usize, usize), Node&gt; {
+    </span><span class="kw">pub fn </span>grid_to_nodes(grid: <span class="kw-2">&amp;</span>[Vec&lt;i32&gt;]) -&gt; HashMap&lt;(usize, usize), Node&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::new();
-        <span class="kw">let </span>max_x = matrix.len() - <span class="number">1</span>;
-        <span class="kw">let </span>max_y = matrix[<span class="number">0</span>].len() - <span class="number">1</span>;
+        <span class="kw">let </span>max_x = grid.len() - <span class="number">1</span>;
+        <span class="kw">let </span>max_y = grid[<span class="number">0</span>].len() - <span class="number">1</span>;
 
-        <span class="comment">// Iterate over the matrix to create nodes
-        </span><span class="kw">for </span>(x, row) <span class="kw">in </span>matrix.iter().enumerate() {
+        <span class="comment">// Iterate over the grid to create nodes
+        </span><span class="kw">for </span>(x, row) <span class="kw">in </span>grid.iter().enumerate() {
             <span class="kw">for </span>(y, <span class="kw-2">&amp;</span>cell) <span class="kw">in </span>row.iter().enumerate() {
                 <span class="kw">let </span>is_blocked = cell == <span class="number">1</span>;
                 <span class="comment">// Create a new Node and insert it into the HashMap
@@ -407,24 +407,24 @@
         hash_map
     }
 
-    <span class="doccomment">/// Prints a 2D matrix and an optional path to the screen.
+    <span class="doccomment">/// Prints a 2D grid and an optional path to the screen.
     ///
     /// # Parameters
-    /// - `matrix`: The 2D matrix.
-    /// - `path`: An optional vector representing the path to be printed on the matrix.
+    /// - `grid`: The 2D grid.
+    /// - `path`: An optional vector representing the path to be printed on the grid.
     ///
     /// # Example
     /// ```rust
-    /// let matrix = vec![
+    /// let grid = vec![
     ///     vec![0, 0, 0],
     ///     vec![0, 1, 0],
     /// ];
     /// let path = Some(vec![(0, 0), (1, 1)]);
-    /// Node::print_matrix(&amp;matrix, &amp;path);
+    /// Node::print_grid(&amp;grid, &amp;path);
     /// ```
-    </span><span class="kw">pub fn </span>print_matrix(matrix: <span class="kw-2">&amp;</span>[Vec&lt;i32&gt;], path: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Vec&lt;(usize, usize)&gt;&gt;) {
-        <span class="comment">// Iterate over each row in the matrix
-        </span><span class="kw">for </span>(y, row) <span class="kw">in </span>matrix.iter().enumerate() {
+    </span><span class="kw">pub fn </span>print_grid(grid: <span class="kw-2">&amp;</span>[Vec&lt;i32&gt;], path: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Vec&lt;(usize, usize)&gt;&gt;) {
+        <span class="comment">// Iterate over each row in the grid
+        </span><span class="kw">for </span>(y, row) <span class="kw">in </span>grid.iter().enumerate() {
             <span class="comment">// Iterate over each cell in the row
             </span><span class="kw">for </span>(x, <span class="kw-2">&amp;</span>cell) <span class="kw">in </span>row.iter().enumerate() {
                 <span class="comment">// Check if the path is defined

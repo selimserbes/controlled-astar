@@ -20,7 +20,7 @@
 
 ### Enhanced Path Visualization:
 
-- Enhanced matrix output visualization for clearer representation of paths, obstacles, and empty cells. The path found by the A\* algorithm is now distinctly marked, making interpretation easier.
+- Enhanced grid output visualization for clearer representation of paths, obstacles, and empty cells. The path found by the A\* algorithm is now distinctly marked, making interpretation easier.
 
 ### Performance Improvements:
 

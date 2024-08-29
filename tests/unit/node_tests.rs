@@ -94,12 +94,12 @@ mod tests {
     }
 
     #[test]
-    fn test_matrix_to_nodes() {
-        // Define a matrix representation of nodes
-        let matrix = vec![vec![0, 1, 0], vec![1, 0, 1], vec![0, 1, 0]];
-        let nodes = Node::matrix_to_nodes(&matrix);
+    fn test_grid_to_nodes() {
+        // Define a grid representation of nodes
+        let grid = vec![vec![0, 1, 0], vec![1, 0, 1], vec![0, 1, 0]];
+        let nodes = Node::grid_to_nodes(&grid);
 
-        // Check if the matrix was correctly converted to nodes
+        // Check if the grid was correctly converted to nodes
         assert_eq!(nodes.len(), 9); // There should be 9 nodes
 
         // Check specific nodes' blocked status

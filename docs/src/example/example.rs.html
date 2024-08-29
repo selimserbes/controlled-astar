@@ -139,7 +139,7 @@
 //! - Converting the grid into a map of `Node` objects
 //! - Manually adjusting neighbors and blocking nodes
 //! - Using the A* algorithm to find the shortest path from a start to a goal
-//! - Printing the matrix with the found path and handling any errors
+//! - Printing the grid with the found path and handling any errors
 
 </span><span class="kw">use </span>controlled_astar::{AStar, AStarError, Direction, Node};
 
@@ -164,13 +164,13 @@
 /// `(0, 0)` to the goal position `(9, 9)`.
 ///
 /// # Output
-/// - If a path is found, prints the matrix with the path highlighted.
+/// - If a path is found, prints the grid with the path highlighted.
 /// - If an error occurs, prints the error message.
 ///
 </span><span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), AStarError&gt; {
     <span class="comment">// Define a 10x10 grid.
-    // This matrix uses 0 for open cells and 1 for blocked cells.
-    </span><span class="kw">let </span>matrix = <span class="macro">vec!</span>[
+    // This grid uses 0 for open cells and 1 for blocked cells.
+    </span><span class="kw">let </span>grid = <span class="macro">vec!</span>[
         <span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
         <span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],
         <span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>],
@@ -183,9 +183,9 @@
         <span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],
     ];
 
-    <span class="comment">// Convert the matrix to a HashMap of `Node` objects.
-    // Each cell in the matrix is represented by a `Node` object.
-    </span><span class="kw">let </span><span class="kw-2">mut </span>nodes = Node::matrix_to_nodes(<span class="kw-2">&amp;</span>matrix);
+    <span class="comment">// Convert the grid to a HashMap of `Node` objects.
+    // Each cell in the grid is represented by a `Node` object.
+    </span><span class="kw">let </span><span class="kw-2">mut </span>nodes = Node::grid_to_nodes(<span class="kw-2">&amp;</span>grid);
 
     <span class="comment">// Manually adjust specific nodes if needed.
     </span><span class="kw">let </span>start_position = (<span class="number">0</span>, <span class="number">0</span>);
@@ -241,8 +241,8 @@
     <span class="comment">// Handle the result of the A* algorithm.
     </span><span class="kw">match </span>result {
         <span class="prelude-val">Ok</span>(path) =&gt; {
-            <span class="comment">// Print the matrix with the found path.
-            </span>Node::print_matrix(<span class="kw-2">&amp;</span>matrix, <span class="kw-2">&amp;</span>path);
+            <span class="comment">// Print the grid with the found path.
+            </span>Node::print_grid(<span class="kw-2">&amp;</span>grid, <span class="kw-2">&amp;</span>path);
             <span class="macro">println!</span>(<span class="string">"Path found: {:?}"</span>, path);
         }
         <span class="prelude-val">Err</span>(e) =&gt; {

@@ -55,11 +55,11 @@ Y 0 | . . . . # . . . . . |
 
 - **`AStar::new(nodes: HashMap<(usize, usize), Node>) -> AStar`**: Creates a new A\* algorithm instance using the provided node map. This initializes the pathfinding algorithm and prepares it to find the shortest path between nodes.
 
-- **`Node::matrix_to_nodes(matrix: &Vec<Vec<u8>>) -> HashMap<(usize, usize), Node>`**: Converts a 2D matrix (with open cells and blocked cells) into a `HashMap` of `Node` objects. Each cell in the matrix is represented as a `Node`, allowing for pathfinding operations to be performed.
+- **`Node::grid_to_nodes(grid: &Vec<Vec<u8>>) -> HashMap<(usize, usize), Node>`**: Converts a 2D grid (with open cells and blocked cells) into a `HashMap` of `Node` objects. Each cell in the grid is represented as a `Node`, allowing for pathfinding operations to be performed.
 
 - **`find_shortest_path(start: (usize, usize), goal: (usize, usize)) -> Result<Vec<(usize, usize)>, AStarError>`**: Finds the shortest path between the specified start and goal positions. Returns a vector of cells representing the path if successful, or an error if the pathfinding fails.
 
-- **`print_matrix(matrix: &Vec<Vec<u8>>, path: &Vec<(usize, usize)>)`**: Prints a visual representation of the matrix with the given path highlighted. This function helps to visualize the pathfinding result on the matrix.
+- **`print_grid(grid: &Vec<Vec<u8>>, path: &Vec<(usize, usize)>)`**: Prints a visual representation of the grid with the given path highlighted. This function helps to visualize the pathfinding result on the grid.
 
 - **`remove_neighbor(Direction)`**: Removes a neighbor in the specified direction (e.g., North, South, East, West, etc.) from a node. This is used to restrict movement options in that direction.
 
@@ -87,14 +87,14 @@ Here's a basic example of how to use the `controlled_astar` library:
 // - Converting the grid into a map of Node objects
 // - Manually adjusting neighbors and blocking nodes
 // - Using the A* algorithm to find the shortest path from a start to a goal
-// - Printing the matrix with the found path and handling any errors
+// - Printing the grid with the found path and handling any errors
 
 use controlled_astar::{AStar, AStarError, Direction, Node};
 
 fn main() -> Result<(), AStarError> {
     // Define a 10x10 grid.
-    // This matrix uses 0 for open cells and 1 for blocked cells.
-    let matrix = vec![
+    // This grid uses 0 for open cells and 1 for blocked cells.
+    let grid = vec![
         vec![0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         vec![0, 0, 1, 0, 1, 0, 1, 1, 1, 0],
         vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -107,9 +107,9 @@ fn main() -> Result<(), AStarError> {
         vec![0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
     ];
 
-    // Convert the matrix to a HashMap of `Node` objects.
-    // Each cell in the matrix is represented by a `Node` object.
-    let mut nodes = Node::matrix_to_nodes(&matrix);
+    // Convert the grid to a HashMap of `Node` objects.
+    // Each cell in the grid is represented by a `Node` object.
+    let mut nodes = Node::grid_to_nodes(&grid);
 
     // Manually adjust specific nodes if needed.
     let start_position = (0, 0);
@@ -165,8 +165,8 @@ fn main() -> Result<(), AStarError> {
     // Handle the result of the A* algorithm.
     match result {
         Ok(path) => {
-            // Print the matrix with the found path.
-            Node::print_matrix(&matrix, &path);
+            // Print the grid with the found path.
+            Node::print_grid(&grid, &path);
             println!("Path found: {:?}", path);
         }
         Err(e) => {
